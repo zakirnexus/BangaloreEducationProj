@@ -1,0 +1,285 @@
+@model List<SchoolProject.Models.Colleges.College>
+@{
+    ViewData["Title"] = ViewBag.Title;
+    var courseName = ViewBag.CourseName ?? ViewBag.Category;
+    var cityName = ViewBag.CityName;
+    var totalRecords = ViewBag.TotalRecords ?? 0;
+    var currentPage = ViewBag.CurrentPage ?? 1;
+    var totalPages = ViewBag.TotalPages ?? 1;
+}
+
+@section MetaTags {
+    <meta name="description" content="@ViewBag.Description" />
+    <link rel="canonical" href="https://www.bangaloreeducation.com/@ViewBag.Course-colleges-in-@ViewBag.City@(currentPage > 1 ? $"?page={currentPage}" : "")" />
+}
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/colleges">Colleges</a></li>
+                    <li class="breadcrumb-item active">@courseName Colleges in @cityName</li>
+                </ol>
+            </nav>
+
+            <!-- Top SEO Content -->
+            @if (!string.IsNullOrEmpty(ViewBag.TopContent))
+            {
+                <div class="seo-content-top mb-4">
+                    @Html.Raw(ViewBag.TopContent)
+                </div>
+            }
+
+            <!-- Page Header -->
+            <h1 class="h3 mb-3">@courseName Colleges in @cityName</h1>
+            <p class="text-muted mb-4">Found <strong>@totalRecords</strong> colleges</p>
+
+            <!-- Active Filters -->
+            @if (ViewBag.FiltersActive)
+            {
+                <div class="active-filters mb-3">
+                    <span class="badge bg-primary me-2">Filters Applied</span>
+                    <a href="/@ViewBag.Course-colleges-in-@ViewBag.City" class="btn btn-sm btn-outline-secondary">Clear All</a>
+                </div>
+            }
+
+            <!-- College Listings -->
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var college in Model)
+                {
+                    <div class="card mb-3 college-card @(college.IsSponsored ? "border-warning" : "")">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Logo -->
+                                <div class="col-md-3 text-center">
+                                    @if (!string.IsNullOrEmpty(college.Logo))
+                                    {
+                                        <img src="@college.Logo" alt="@college.InstituteName logo" class="img-fluid" style="max-height: 100px;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 100px;">
+                                            <span class="text-muted">No Logo</span>
+                                        </div>
+                                    }
+                                    @if (college.IsSponsored)
+                                    {
+                                        <span class="badge bg-warning text-dark mt-2">Featured</span>
+                                    }
+                                </div>
+
+                                <!-- Info -->
+                                <div class="col-md-6">
+                                    <h5 class="card-title">
+                                        <a href="/college/@college.InstituteSlug" class="text-decoration-none">
+                                            @college.InstituteName
+                                        </a>
+                                    </h5>
+                                    <p class="text-muted small mb-1">
+                                        <i class="bi bi-geo-alt"></i> @college.Address, @college.City?.CityName
+                                    </p>
+                                    @if (!string.IsNullOrEmpty(college.AffiliatedTo))
+                                    {
+                                        <p class="text-muted small mb-1">
+                                            <i class="bi bi-building"></i> Affiliated to: @college.AffiliatedTo
+                                        </p>
+                                    }
+                                    @if (college.NaacGrade != null)
+                                    {
+                                        <p class="text-muted small mb-1">
+                                            <i class="bi bi-award"></i> NAAC: @college.NaacGrade
+                                        </p>
+                                    }
+                                    @if (college.PlacementPercentage.HasValue)
+                                    {
+                                        <p class="text-muted small mb-1">
+                                            <i class="bi bi-graph-up"></i> Placements: @college.PlacementPercentage%
+                                        </p>
+                                    }
+                                    <div class="mt-2">
+                                        @if (college.HostelAvailable)
+                                        {<span class="badge bg-info me-1">Hostel</span>}
+                                        @if (college.TransportAvailable)
+                                        {<span class="badge bg-info me-1">Transport</span>}
+                                        @if (college.ScholarshipAvailable)
+                                        {<span class="badge bg-success me-1">Scholarship</span>}
+                                    </div>
+                                </div>
+
+                                <!-- CTA -->
+                                <div class="col-md-3 text-end d-flex flex-column justify-content-center">
+                                    @if (college.CollegeCourses != null && college.CollegeCourses.Any())
+                                    {
+                                        <p class="text-primary fw-bold mb-2">
+                                            @college.CollegeCourses.FirstOrDefault()?.FeesStructure
+                                        </p>
+                                    }
+                                    <a href="/college/@college.InstituteSlug" class="btn btn-outline-primary btn-sm mb-2">View Details</a>
+                                    <button class="btn btn-primary btn-sm" onclick="openEnquiryModal(@college.InstituteId, '@college.InstituteName')">
+                                        Get Admission Info
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            @if (currentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(currentPage - 1)">Previous</a>
+                                </li>
+                            }
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="?page=@i">@i</a>
+                                </li>
+                            }
+                            @if (currentPage < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(currentPage + 1)">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No colleges found for the selected criteria.
+                </div>
+            }
+
+            <!-- Bottom SEO Content -->
+            @if (!string.IsNullOrEmpty(ViewBag.BottomContent))
+            {
+                <div class="seo-content-bottom mt-4">
+                    @Html.Raw(ViewBag.BottomContent)
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            @if (ViewBag.ShowFilterPanel == true)
+            {
+                <partial name="_FilterPanelCollege" />
+            }
+
+            <!-- Related Links -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Browse Other Courses</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="/btech-colleges-in-@ViewBag.City">B.Tech Colleges</a></li>
+                        <li><a href="/mba-colleges-in-@ViewBag.City">MBA Colleges</a></li>
+                        <li><a href="/mbbs-colleges-in-@ViewBag.City">MBBS Colleges</a></li>
+                        <li><a href="/bsc-colleges-in-@ViewBag.City">B.Sc Colleges</a></li>
+                        <li><a href="/llb-colleges-in-@ViewBag.City">LLB Colleges</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enquiry Modal -->
+<div class="modal fade" id="enquiryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Get Admission Info</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="collegeEnquiryForm">
+                    <input type="hidden" id="enqInstituteId" />
+                    <div class="mb-3">
+                        <label class="form-label">College</label>
+                        <input type="text" class="form-control" id="enqCollegeName" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Your Name *</label>
+                        <input type="text" class="form-control" id="enqName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="enqEmail" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone *</label>
+                        <input type="tel" class="form-control" id="enqPhone" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" id="enqMessage" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3 d-none">
+                        <input type="text" id="enqHoneypot" />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Submit Enquiry</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openEnquiryModal(instituteId, collegeName) {
+            document.getElementById('enqInstituteId').value = instituteId;
+            document.getElementById('enqCollegeName').value = collegeName;
+            new bootstrap.Modal(document.getElementById('enquiryModal')).show();
+        }
+
+        document.getElementById('collegeEnquiryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const data = {
+                instituteId: parseInt(document.getElementById('enqInstituteId').value),
+                college: document.getElementById('enqCollegeName').value,
+                name: document.getElementById('enqName').value,
+                email: document.getElementById('enqEmail').value,
+                phone: document.getElementById('enqPhone').value,
+                message: document.getElementById('enqMessage').value,
+                honeypot: document.getElementById('enqHoneypot').value,
+                pageUrl: window.location.href,
+                recaptchaToken: '' // Add reCAPTCHA token here
+            };
+
+            try {
+                const response = await fetch('/College/Enquiry/Submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Thank you! We will contact you soon.');
+                    bootstrap.Modal.getInstance(document.getElementById('enquiryModal')).hide();
+                    this.reset();
+                } else {
+                    alert(result.message || 'Something went wrong. Please try again.');
+                }
+            } catch (err) {
+                alert('Network error. Please try again.');
+            }
+        });
+    </script>
+}

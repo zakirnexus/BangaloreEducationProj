@@ -1,0 +1,186 @@
+@{
+    // Localities is List<dynamic> with .LocalityId (int) and .LocalityName (string)
+    var localities   = ViewBag.Localities as System.Collections.IEnumerable;
+    // CoedOptions is List<dynamic> with .CoedId (int) and .CoedName (string)
+    var coedOptions  = ViewBag.CoedOptions as System.Collections.IEnumerable;
+    var ownerOptions = ViewBag.OwnerOptions as System.Collections.IEnumerable;
+
+    // locality param is now an int ID
+    int? selLocality = ViewBag.SelLocality as int?;
+    string? selNsewc    = ViewBag.SelNsewc    as string;
+    int?    selCoed     = ViewBag.SelCoed     as int?;
+    int?    selOwner    = ViewBag.SelOwnership as int?;
+    string? selFees     = ViewBag.SelFees     as string;
+    string? board       = ViewBag.Board       as string;
+    string? city        = ViewBag.City        as string;
+
+    bool anyFilterActive = selLocality != null || selNsewc != null || selCoed != null || selOwner != null || selFees != null;
+}
+
+<div class="col-md-2 filter-panel-col" id="filterPanelCol">
+    <div class="filter-panel panel panel-default">
+        <div class="panel-heading" style="background:#f5f7fa; font-weight:700; font-size:13px; letter-spacing:.5px; padding:10px 14px;">
+            <i class="fa fa-sliders"></i>&nbsp; Filter Schools
+        </div>
+        <div class="panel-body" style="padding:12px 10px;">
+
+            <form method="get" action="/@board-schools-in-@city" id="filterForm">
+
+                <input type="hidden" name="page" value="1" />
+
+                @* ── LOCALITY ── *@
+                @if (localities != null)
+                {
+                    var localityList = localities.Cast<dynamic>().ToList();
+                    @if (localityList.Any())
+                    {
+                        <div class="filter-group">
+                            <label class="filter-label">Locality</label>
+                            <select name="locality" class="form-control filter-select" onchange="this.form.submit()">
+                                <option value="">All Areas</option>
+                                @foreach (var loc in localityList)
+                                {
+                                    int    lid   = (int)loc.LocalityId;
+                                    string lname = (string)loc.LocalityName;
+                                    @if (selLocality == lid)
+                                    {
+                                        <option value="@lid" selected="selected">@lname</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@lid">@lname</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    }
+                }
+
+                @* ── AREA (NSEWC) ── *@
+                <div class="filter-group">
+                    <label class="filter-label">Area</label>
+                    <select name="nsewc" class="form-control filter-select" onchange="this.form.submit()">
+                        @{
+                            var areaBands = new[]
+                            {
+                                ("",         "All Bangalore"),
+                                ("north",    "North Bangalore"),
+                                ("south",    "South Bangalore"),
+                                ("east",     "East Bangalore"),
+                                ("west",     "West Bangalore"),
+                                ("central",  "Central Bangalore"),
+                            };
+                            foreach (var (val, label) in areaBands)
+                            {
+                                @if (selNsewc == val || (val == "" && selNsewc == null))
+                                {
+                                    <option value="@val" selected="selected">@label</option>
+                                }
+                                else
+                                {
+                                    <option value="@val">@label</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+                @* ── GENDER TYPE ── *@
+                @if (coedOptions != null)
+                {
+                    var coedList = coedOptions.Cast<dynamic>().ToList();
+                    @if (coedList.Any())
+                    {
+                        <div class="filter-group">
+                            <label class="filter-label">Gender Type</label>
+                            <select name="coedId" class="form-control filter-select" onchange="this.form.submit()">
+                                <option value="">All</option>
+                                @foreach (var c in coedList)
+                                {
+                                    int    cid   = (int)c.CoedId;
+                                    string cname = (string)c.CoedName;
+                                    @if (selCoed == cid)
+                                    {
+                                        <option value="@cid" selected="selected">@cname</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@cid">@cname</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    }
+                }
+
+                @* ── OWNERSHIP ── *@
+                @if (ownerOptions != null)
+                {
+                    var ownerList = ownerOptions.Cast<dynamic>().ToList();
+                    @if (ownerList.Any())
+                    {
+                        <div class="filter-group">
+                            <label class="filter-label">Ownership</label>
+                            <select name="ownershipId" class="form-control filter-select" onchange="this.form.submit()">
+                                <option value="">All</option>
+                                @foreach (var o in ownerList)
+                                {
+                                    int    oid   = (int)o.OwnershipId;
+                                    string otype = (string)o.Type;
+                                    @if (selOwner == oid)
+                                    {
+                                        <option value="@oid" selected="selected">@otype</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@oid">@otype</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    }
+                }
+
+                @* ── FEES RANGE ── *@
+                <div class="filter-group">
+                    <label class="filter-label">Annual Fees</label>
+                    <select name="feesRange" class="form-control filter-select" onchange="this.form.submit()">
+                        @{
+                            var feesBands = new[]
+                            {
+                                ("",                 "Any"),
+                                ("0-50000",          "Under ₹50,000"),
+                                ("50000-100000",     "₹50K – ₹1 Lakh"),
+                                ("100000-200000",    "₹1 Lakh – ₹2 Lakhs"),
+                                ("200000-500000",    "₹2 Lakhs – ₹5 Lakhs"),
+                                ("500000-99999999",  "Above ₹5 Lakhs"),
+                            };
+                            foreach (var (val, label) in feesBands)
+                            {
+                                @if (selFees == val || (val == "" && selFees == null))
+                                {
+                                    <option value="@val" selected="selected">@label</option>
+                                }
+                                else
+                                {
+                                    <option value="@val">@label</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+                @* ── CLEAR — only when a filter is active ── *@
+                @if (anyFilterActive)
+                {
+                    <a href="/@board-schools-in-@city"
+                       class="btn btn-default btn-block btn-sm"
+                       style="margin-top:8px; font-size:12px;">
+                        <i class="fa fa-times-circle"></i> Clear Filters
+                    </a>
+                }
+
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+
+<h1>Blog</h1>
+
+@foreach (var post in Model)
+{
+    <div style="margin-bottom:40px;">
+        <h2>
+            <a href="/blog/@post.Slug">@post.Title</a>
+        </h2>
+
+        <p style="color:#000; font-size:1.00em;">@post.CreatedDate.ToString("dd MMM yyyy")</p>
+
+        @if (!string.IsNullOrEmpty(post.Image))
+        {
+            <img src="@post.Image" alt="@post.Title" style="max-width:100%; height:auto; margin-bottom:10px; border-radius:6px;" />
+        }
+
+        @if (!string.IsNullOrEmpty(post.Content))
+        {
+            var firstPara = post.Content.Contains("</p>")
+                ? post.Content.Substring(0, post.Content.IndexOf("</p>") + 4)
+                : (post.Content.Length > 300 ? post.Content.Substring(0, 300) + "..." : post.Content);
+
+            @Html.Raw(firstPara)
+        }
+
+        <p><a href="/blog/@post.Slug">Read more →</a></p>
+    </div>
+}

@@ -1,0 +1,11 @@
+@{
+    var fullText = ViewBag.TopContent as string ?? "";
+}
+
+@if (!string.IsNullOrEmpty(fullText))
+{
+    <div class="top-content">
+        @Html.Raw(fullText)
+    </div>
+}
+
