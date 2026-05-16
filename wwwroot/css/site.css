@@ -1,0 +1,90 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+.img-fluid {width: 100%;height: auto;
+}
+.top-content {
+    margin: 10px 0 20px;
+    line-height: 1.6;
+}
+
+.read-more {
+    display: inline-block;
+    margin-top: 5px;
+    color: blue;
+    cursor: pointer;
+}
+.moreText {
+    display: none;
+}
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+.school-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.school-address {
+    font-size: 14px;
+    color: #555;
+}
+.btn-phone {
+    text-decoration: none;
+}
+
+.phone-box {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 12px;
+    background-color: #ea6645;
+    color: white;
+    border-radius: 4px;
+}
+
+.phone-box i {
+    margin-right: 8px;
+}
+.school-logo {
+    margin-top: 15px;
+    margin-right: 15px;
+}
+.breadcrumb {
+    padding-bottom: 15px !important;
+}
+.breadcrumb-wrapper {
+    margin-bottom: 50px;
+}
+.content-spacing {
+    padding-top: 20px;
+}
