@@ -1,0 +1,12 @@
+@model SchoolProject.Models.BlogPost
+
+<h1>@Model.Title</h1>
+
+@if (!string.IsNullOrEmpty(Model.Image))
+{
+    <img src="@Model.Image" style="max-width:100%;" />
+}
+
+<div>
+    @Html.Raw(Model.Content)
+</div>

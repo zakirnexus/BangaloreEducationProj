@@ -1,0 +1,596 @@
+@using SchoolProject.Models
+@using SchoolProject.Models.Lookups
+@model IEnumerable<School>
+  
+@{
+    Layout = "_LayoutAdmin";
+    
+    var cities = ViewBag.Cities as IEnumerable<SchoolProject.Models.Lookups.City> ?? Enumerable.Empty<SchoolProject.Models.Lookups.City>();
+    var syllabuses = ViewBag.Syllabuses as IEnumerable<SchoolProject.Models.Syllabus> ?? Enumerable.Empty<SchoolProject.Models.Syllabus>();
+    int? selCity = ViewBag.SelectedCityId;
+    int? selSyl = ViewBag.SelectedSyllabusId;
+    bool hasResults = Model != null && Model.Any();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Ranking Admin — Bangalore Education</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --border: #e2e0d8;
+    --text: #1a1a18;
+    --muted: #6b6b65;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --featured: #7c3aed;
+    --featured-light: #f5f3ff;
+    --sponsored: #d97706;
+    --sponsored-light: #fffbeb;
+    --regular: #059669;
+    --regular-light: #ecfdf5;
+    --danger: #dc2626;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .header-logo span { color: var(--accent); }
+  .header-sep { width: 1px; height: 20px; background: var(--border); }
+  .header-title { font-size: 13px; color: var(--muted); }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+
+  /* ── Filter bar ── */
+  .filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+  .filter-group label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-group select {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    cursor: pointer;
+  }
+  .filter-group select:focus { border-color: var(--accent); }
+  .btn {
+    padding: 9px 20px;
+    border-radius: var(--radius);
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+  .btn-success:hover { background: #a7f3d0; }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .stat-pill.featured { background: var(--featured-light); color: var(--featured); border-color: #c4b5fd; }
+  .stat-pill.sponsored { background: var(--sponsored-light); color: var(--sponsored); border-color: #fcd34d; }
+  .stat-pill.regular { background: var(--regular-light); color: var(--regular); border-color: #6ee7b7; }
+  .stat-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+  /* ── Tier sections ── */
+  .tier-section { margin-bottom: 24px; }
+  .tier-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    border: 1px solid;
+    border-bottom: none;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .tier-header.featured { background: var(--featured-light); color: var(--featured); border-color: #c4b5fd; }
+  .tier-header.sponsored { background: var(--sponsored-light); color: var(--sponsored); border-color: #fcd34d; }
+  .tier-header.regular { background: var(--regular-light); color: var(--regular); border-color: #6ee7b7; }
+  .tier-hint { font-size: 11px; font-weight: 400; opacity: 0.8; margin-left: auto; }
+
+  /* ── School list ── */
+  .school-list {
+    border: 1px solid var(--border);
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: var(--surface);
+    min-height: 60px;
+    overflow: hidden;
+  }
+  .tier-section.featured .school-list { border-color: #c4b5fd; }
+  .tier-section.sponsored .school-list { border-color: #fcd34d; }
+  .tier-section.regular .school-list { border-color: #6ee7b7; }
+
+  .school-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    cursor: grab;
+    transition: background 0.12s;
+  }
+  .school-row:last-child { border-bottom: none; }
+  .school-row:hover { background: #fafaf8; }
+  .school-row.sortable-ghost { opacity: 0.35; background: var(--accent-light); }
+  .school-row.sortable-chosen { background: #f0f9ff; box-shadow: var(--shadow); }
+
+  .drag-handle {
+    color: #c4c4bc;
+    cursor: grab;
+    font-size: 16px;
+    flex-shrink: 0;
+    user-select: none;
+    line-height: 1;
+  }
+  .drag-handle:active { cursor: grabbing; }
+
+  .rank-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .rank-badge.featured { background: var(--featured-light); color: var(--featured); }
+  .rank-badge.sponsored { background: var(--sponsored-light); color: var(--sponsored); }
+  .rank-badge.regular { background: #f1f5f9; color: var(--muted); }
+
+  .school-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .school-meta { font-size: 12px; color: var(--muted); margin-top: 2px; font-weight: 400; }
+
+  .tier-toggle {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .tier-btn {
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.12s;
+    background: transparent;
+  }
+  .tier-btn.featured { color: var(--featured); border-color: #c4b5fd; }
+  .tier-btn.featured.active, .tier-btn.featured:hover { background: var(--featured-light); }
+  .tier-btn.sponsored { color: var(--sponsored); border-color: #fcd34d; }
+  .tier-btn.sponsored.active, .tier-btn.sponsored:hover { background: var(--sponsored-light); }
+  .tier-btn.regular { color: var(--regular); border-color: #6ee7b7; }
+  .tier-btn.regular.active, .tier-btn.regular:hover { background: var(--regular-light); }
+
+  /* ── Empty state ── */
+  .empty-tier {
+    padding: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ── Action bar ── */
+  .action-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+  .save-status {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+  .save-status.saving { color: var(--accent); }
+  .save-status.saved { color: var(--regular); }
+  .save-status.error { color: var(--danger); }
+
+  /* ── No results ── */
+  .empty-state {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 48px;
+    text-align: center;
+  }
+  .empty-state h3 { font-size: 16px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+  .empty-state p { font-size: 13px; color: #9ca3af; }
+
+  .notice {
+    background: var(--accent-light);
+    border: 1px solid #bfdbfe;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #1d4ed8;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">Bangalore<span>Education</span></div>
+  <div class="header-sep"></div>
+  <div class="header-title">School Ranking Admin</div>
+</div>
+
+<div class="container">
+
+  <!-- Filter bar -->
+  <form method="get" action="/admin/ranking">
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>City</label>
+        <select name="cityId">
+          <option value="">— Select City —</option>
+          @foreach (var c in cities)
+          {
+            @if (selCity == c.CityId) { <option value="@c.CityId" selected="selected">@c.CityName</option> } else { <option value="@c.CityId">@c.CityName</option> }
+          }
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Board / Syllabus</label>
+        <select name="syllabusId">
+          <option value="">— Select Board —</option>
+          @foreach (var s in syllabuses)
+          {
+            @if (selSyl == s.SyllabusId) { <option value="@s.SyllabusId" selected="selected">@s.SyllabusName</option> } else { <option value="@s.SyllabusId">@s.SyllabusName</option> }
+          }
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Load Schools</button>
+      @if (hasResults)
+      {
+        <button type="button" class="btn btn-danger" id="btn-reset">Reset All Ranks</button>
+      }
+    </div>
+  </form>
+
+  @if (!hasResults && selCity.HasValue)
+  {
+    <div class="empty-state">
+      <h3>No schools found</h3>
+      <p>No schools match the selected city and board combination.</p>
+    </div>
+  }
+  else if (!hasResults)
+  {
+    <div class="empty-state">
+      <h3>Select a city and board to begin</h3>
+      <p>Choose a city and syllabus above, then click Load Schools.</p>
+    </div>
+  }
+  else
+  {
+    <div class="notice">
+      ⬆ Drag rows to reorder. Use the tier buttons to mark schools as <strong>Top Ranked</strong> (no badge), <strong>Featured</strong> (badge shown to visitors), or <strong>Regular</strong>. Click <strong>Save Changes</strong> when done.
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar" id="stats-bar"></div>
+
+    <!-- Top Ranked tier (no public badge) -->
+    <div class="tier-section featured">
+      <div class="tier-header featured">
+        🏆 Top Ranked Schools
+        <span class="tier-hint">Shown first · no badge shown to visitors · ordered by drag position</span>
+      </div>
+      <div class="school-list" id="list-featured">
+        <div class="empty-tier" id="empty-featured">No top ranked schools yet — drag schools here or click 🏆 on a school</div>
+      </div>
+    </div>
+
+    <!-- Featured tier (shown as "Featured" badge publicly) -->
+    <div class="tier-section sponsored">
+      <div class="tier-header sponsored">
+        ⭐ Featured Listings
+        <span class="tier-hint">Shown after top ranked · labelled "Featured" to visitors</span>
+      </div>
+      <div class="school-list" id="list-sponsored">
+        <div class="empty-tier" id="empty-sponsored">No featured listings yet</div>
+      </div>
+    </div>
+
+    <!-- Regular tier -->
+    <div class="tier-section regular">
+      <div class="tier-header regular">
+        📋 Regular Schools
+        <span class="tier-hint">Shown last · sorted A–Z</span>
+      </div>
+      <div class="school-list" id="list-regular">
+        <div class="empty-tier" id="empty-regular" style="display:none">No regular schools</div>
+      </div>
+    </div>
+
+    <!-- Action bar -->
+    <div class="action-bar">
+      <button class="btn btn-success" id="btn-save">💾 Save Changes</button>
+      <span class="save-status" id="save-status">Unsaved changes will be lost</span>
+    </div>
+  }
+</div>
+
+@if (hasResults)
+{
+  <!-- Embed school data for JS -->
+  <script>
+    const SCHOOLS_RAW = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+      Model.Select(s => new {
+        id = s.InstituteId,
+        name = s.InstituteName,
+        address = s.Address,
+        rank = s.ListingRank ?? 0,
+        isSponsored = s.IsSponsored
+      })
+    ));
+    const CITY_ID = @(selCity ?? 0);
+    const SYLLABUS_ID = @(selSyl ?? 0);
+  </script>
+  <script>
+  // ── State ──────────────────────────────────────────
+  let schools = SCHOOLS_RAW.map(s => ({
+    ...s,
+    tier: s.isSponsored ? 'sponsored' : (s.rank > 0 && s.rank < 100 ? 'featured' : 'regular')
+  }));
+
+  // ── Render ─────────────────────────────────────────
+  function getTierSchools(tier) {
+    return schools
+      .filter(s => s.tier === tier)
+      .sort((a, b) => {
+        if (tier === 'regular') return (a.name || '').localeCompare(b.name || '');
+        return a.rank - b.rank;
+      });
+  }
+
+  function buildRow(school) {
+    const tierClass = school.tier;
+    const div = document.createElement('div');
+    div.className = 'school-row';
+    div.dataset.id = school.id;
+    div.innerHTML = `
+      <span class="drag-handle" title="Drag to reorder">⠿</span>
+      <div class="rank-badge ${tierClass}" data-rank-badge></div>
+      <div style="flex:1">
+        <div class="school-name">${school.name || 'Unnamed School'}</div>
+        <div class="school-meta">${school.address || ''}</div>
+      </div>
+      <div class="tier-toggle">
+        <button class="tier-btn featured ${school.tier==='featured'?'active':''}" onclick="setTier(${school.id},'featured')">🏆 Top Ranked</button>
+        <button class="tier-btn sponsored ${school.tier==='sponsored'?'active':''}" onclick="setTier(${school.id},'sponsored')">⭐ Featured</button>
+        <button class="tier-btn regular ${school.tier==='regular'?'active':''}" onclick="setTier(${school.id},'regular')">Regular</button>
+      </div>
+    `;
+    return div;
+  }
+
+  function render() {
+    ['featured','sponsored','regular'].forEach(tier => {
+      const list = document.getElementById('list-' + tier);
+      const empty = document.getElementById('empty-' + tier);
+      const items = getTierSchools(tier);
+
+      // Clear existing rows (keep empty placeholder)
+      Array.from(list.querySelectorAll('.school-row')).forEach(el => el.remove());
+
+      if (items.length === 0) {
+        empty.style.display = '';
+      } else {
+        empty.style.display = 'none';
+        items.forEach((s, idx) => {
+          const row = buildRow(s);
+          const badge = row.querySelector('[data-rank-badge]');
+          if (tier === 'regular') badge.textContent = '—';
+          else badge.textContent = idx + 1;
+          list.appendChild(row);
+        });
+      }
+    });
+
+    updateStats();
+  }
+
+  function updateStats() {
+    const f = schools.filter(s => s.tier==='featured').length;
+    const sp = schools.filter(s => s.tier==='sponsored').length;
+    const r = schools.filter(s => s.tier==='regular').length;
+    document.getElementById('stats-bar').innerHTML = `
+      <div class="stat-pill featured"><span class="stat-dot"></span>${f} Top Ranked</div>
+      <div class="stat-pill sponsored"><span class="stat-dot"></span>${sp} Featured</div>
+      <div class="stat-pill regular"><span class="stat-dot"></span>${r} Regular</div>
+    `;
+  }
+
+  function setTier(id, tier) {
+    const s = schools.find(x => x.id === id);
+    if (!s) return;
+    s.tier = tier;
+    render();
+    setStatus('unsaved');
+  }
+
+  // ── Sortable.js drag-and-drop ──────────────────────
+  function initSortable(tier) {
+    const el = document.getElementById('list-' + tier);
+    Sortable.create(el, {
+      group: 'schools',        // shared group = cross-tier drag
+      animation: 150,
+      handle: '.drag-handle',
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      onEnd(evt) {
+        // Figure out which tier the item landed in
+        const newTier = evt.to.id.replace('list-', '');
+        const id = parseInt(evt.item.dataset.id);
+        const s = schools.find(x => x.id === id);
+        if (s) s.tier = newTier;
+        render();
+        setStatus('unsaved');
+      }
+    });
+  }
+
+  // ── Save ───────────────────────────────────────────
+  function computeRanks() {
+    const result = [];
+    ['featured','sponsored','regular'].forEach(tier => {
+      const items = getTierSchools(tier);
+      items.forEach((s, idx) => {
+        let rank = 0;
+        let isSponsored = false;
+        if (tier === 'featured')  { rank = idx + 1; isSponsored = false; }
+        if (tier === 'sponsored') { rank = 100 + idx; isSponsored = true; }
+        if (tier === 'regular')   { rank = 0; isSponsored = false; }
+        result.push({ instituteId: s.id, listingRank: rank, isSponsored });
+      });
+    });
+    return result;
+  }
+
+  function setStatus(state, msg) {
+    const el = document.getElementById('save-status');
+    el.className = 'save-status ' + state;
+    el.textContent = msg || {
+      unsaved: 'You have unsaved changes',
+      saving: 'Saving…',
+      saved: '✓ All changes saved',
+      error: '✗ Save failed — try again'
+    }[state];
+  }
+
+  document.getElementById('btn-save').addEventListener('click', async () => {
+    setStatus('saving');
+    try {
+      const payload = { schools: computeRanks() };
+      const res = await fetch('/admin/ranking/bulk-update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) setStatus('saved', `✓ Saved ${data.updated} schools`);
+      else setStatus('error');
+    } catch(e) {
+      setStatus('error');
+    }
+  });
+
+  // ── Reset ──────────────────────────────────────────
+  const btnReset = document.getElementById('btn-reset');
+  if (btnReset) {
+    btnReset.addEventListener('click', async () => {
+      if (!confirm('Reset ALL school ranks for this city+board to Regular? This cannot be undone.')) return;
+      try {
+        const res = await fetch('/admin/ranking/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cityId: CITY_ID, syllabusId: SYLLABUS_ID })
+        });
+        const data = await res.json();
+        if (data.success) {
+          schools.forEach(s => s.tier = 'regular');
+          render();
+          setStatus('saved', `✓ Reset ${data.reset} schools`);
+        }
+      } catch(e) { alert('Reset failed'); }
+    });
+  }
+
+  // ── Boot ───────────────────────────────────────────
+  render();
+  ['featured','sponsored','regular'].forEach(initSortable);
+  setStatus('saved', 'Loaded — drag to reorder, click tier buttons to reassign');
+  </script>
+}
+
+</body>
+</html>
+

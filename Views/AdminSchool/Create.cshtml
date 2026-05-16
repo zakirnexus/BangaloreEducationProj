@@ -1,0 +1,62 @@
+@model SchoolProject.Models.School
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Add Schools";
+}
+<h2>Add School</h2>
+
+<form method="post">
+
+    <div class="form-group">
+        <label>Name</label>
+        <input asp-for="InstituteName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Slug</label>
+        <input asp-for="InstituteSlug" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>City</label>
+        <select asp-for="CityId" class="form-control">
+            @foreach (var c in ViewBag.Cities)
+            {
+                <option value="@c.city_id">@c.CityName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Syllabus</label>
+        <select asp-for="SyllabusId" class="form-control">
+            @foreach (var s in ViewBag.Syllabuses)
+            {
+                <option value="@s.SyllabusId">@s.SyllabusName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Address</label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Pincode</label>
+        <input asp-for="Pincode" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Established</label>
+        <input asp-for="Estd" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Fees</label>
+        <textarea asp-for="FeesStructure" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+
+</form>

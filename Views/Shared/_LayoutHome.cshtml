@@ -1,0 +1,46 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <title>@(ViewBag.Title ?? "Bangalore Education")</title>
+    <meta name="description" content="@(ViewBag.Description ?? "")" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+
+<body>
+<div class="wrapper">
+
+    <!-- HEADER -->
+    <div class="navigation-wrapper">
+        <div class="primary-navigation-wrapper">
+            <header class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <a href="/">
+                            <img src="/assets/img/bangalore-education-com-logo.webp">
+                        </a>
+                    </div>
+
+                    @await Html.PartialAsync("_Nav")
+                </div>
+            </header>
+        </div>
+    </div>
+
+    <!-- FULL WIDTH CONTENT -->
+    
+                @RenderBody()
+     
+
+    <!-- FOOTER -->
+    @await Html.PartialAsync("_Footer")
+
+</div>
+</body>
+</html>

@@ -1,0 +1,284 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <title>@(ViewBag.Title ?? "Bangalore Education")</title>
+    <meta name="description" content="@(ViewBag.Description ?? "")" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="BangaloreEducation.com">
+    <meta name="robots" content="noindex,follow">
+
+    <!-- Fonts & Icons -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/selectize.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/css/viewer.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+    <!-- Canonical URL -->
+    @{
+        var request = HttpContextAccessor.HttpContext.Request;
+        var canonicalUrl = ViewBag.Canonical != null
+            ? $"{request.Scheme}://{request.Host}{ViewBag.Canonical}"
+            : $"{request.Scheme}://{request.Host}{request.Path}";
+    }
+    <link rel="canonical" href="@canonicalUrl">
+
+    @if (ViewBag.CurrentPage != null && ViewBag.TotalPages != null)
+    {
+        if (ViewBag.CurrentPage > 1)
+        {
+            <link rel="prev" href="?page=@(ViewBag.CurrentPage - 1)" />
+        }
+        if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <link rel="next" href="?page=@(ViewBag.CurrentPage + 1)" />
+        }
+    }
+
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lel-dYsAAAAAAN63Lq-Pih9CSFzEACan0RojVQD"></script>
+    <script>window.recaptchaSiteKey = "6Lel-dYsAAAAAAN63Lq-Pih9CSFzEACan0RojVQD";</script>
+
+    <style>
+        /* ── Filter Panel ── */
+        .filter-panel {
+            position: sticky;
+            top: 16px;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.08);
+        }
+        .filter-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: #666;
+            margin: 12px 0 4px;
+        }
+        .filter-label:first-child { margin-top: 0; }
+        .filter-select {
+            font-size: 13px;
+            height: 32px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .filter-group { margin-bottom: 6px; }
+        /* Shrink right sidebar on list pages to give filter panel room */
+        .has-filter-panel #page-sidebar { font-size: 13px; }
+        /* Mobile: stack filter panel above content */
+        @@media (max-width: 767px) {
+            .filter-panel-col { margin-bottom: 16px; }
+        }
+    </style>
+</head>
+<body class="page-sub-page">
+<!-- Wrapper -->
+<div class="wrapper">
+
+    <!-- Header -->
+    <div class="navigation-wrapper">
+        <!-- Secondary Navigation -->
+        <div class="secondary-navigation-wrapper">
+            <div class="container">
+                <div class="navigation-contact pull-left">
+                    <a href="https://wa.me/919886377748" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:none;">
+                        <i class="fa fa-whatsapp" style="color:#25D366;"></i>
+                        WhatsApp Us: <span class="opacity-70">+91 98863 77748</span>
+                    </a>
+                </div>
+                <ul class="secondary-navigation list-unstyled pull-right">
+                    <li><a href="/contact/">Contact Us</a></li>
+                    <li><a href="https://blog.bangaloreeducation.com/">Blog</a></li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a asp-controller="Account" asp-action="Logout">Log Out</a></li>
+                        <li>Hello, @User.Identity.Name</li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller="Account" asp-action="Login">Log In</a></li>
+                        <li><a asp-controller="Account" asp-action="Register">Register</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Primary Navigation -->
+        <div class="primary-navigation-wrapper">
+            <header class="navbar" id="top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <div class="navbar-brand nav" id="brand">
+                            <a href="/"><img src="/assets/img/bangalore-education-com-logo.webp" alt="BangaloreEducation.com"></a>
+                        </div>
+                    </div>
+                    @await Html.PartialAsync("_Nav")
+
+                    <form method="get" action="/Search/Index" class="search-bar">
+                        <div class="search-wrapper">
+                            <i class="fa fa-search search-icon"></i>
+                            <input type="text" id="searchBox" name="q"
+                                placeholder="Search schools, DPS, NPS, locality..."
+                                autocomplete="off">
+                            <button type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </header>
+        </div>
+    </div>
+    <!-- End Header -->
+
+    <!-- Page Content -->
+    <div id="page-content">
+        <div class="container">
+            @{
+                var path        = Context.Request.Path.Value?.ToLower();
+                bool isHomePage = path == "/" || path == "/home" || path == "/home/index";
+                bool showFilter = ViewBag.ShowFilterPanel == true;
+
+                // Column widths:
+                //   Home page          → col-md-12 (no sidebar, no filter)
+                //   List + filter      → filter col-md-2 | main col-md-8 | sidebar col-md-2
+                //   Other inner pages  → main col-md-8 | sidebar col-md-4
+                string mainClass    = isHomePage ? "col-md-12" : (showFilter ? "col-md-8" : "col-md-8");
+                string sidebarClass = showFilter ? "col-md-2" : "col-md-4";
+            }
+
+            @* ── On filter pages: breadcrumb + SEO block span full width ABOVE the 3 columns.
+                 These are rendered here from ViewBag so all 3 columns start at the same height. ── *@
+            @if (showFilter)
+            {
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="breadcrumb-wrapper">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li><a href="/">Home</a></li>
+                                    @if (ViewBag.Board != null && ViewBag.City != null)
+                                    {
+                                        <li class="active">@(ViewBag.Board.ToString().ToUpper()) Schools in @ViewBag.City</li>
+                                    }
+                                </ol>
+                            </nav>
+                        </div>
+                        <div style="height:20px;"></div>
+                        @if (!string.IsNullOrEmpty(ViewBag.TopContent as string))
+                        {
+                            <div class="seo-content panel panel-default">
+                                <div class="panel-body">@Html.Raw(ViewBag.TopContent)</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="row @(showFilter ? "has-filter-panel" : "")">
+
+                @* ── LEFT FILTER PANEL (school list pages only) ── *@
+                @if (showFilter)
+                {
+                    @await Html.PartialAsync("_FilterPanel")
+                }
+
+                <!-- MAIN Content -->
+                <div class="@mainClass">
+                    <div id="page-main">
+                        @RenderBody()
+                    </div><!-- /#page-main -->
+                </div><!-- /.main col -->
+
+                <!-- Right Sidebar -->
+                @if (!isHomePage)
+                {
+                    @await Html.PartialAsync("_Sidebar", sidebarClass)
+                }
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+    </div><!-- end Page Content -->
+
+    <!-- ✅ MODALS — must be before _Footer so scripts can find them in DOM -->
+
+    <!-- Listing Page Modal -->
+    <div id="enquiryModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">Send Enquiry</div>
+                <div class="modal-body">
+                    <form id="enquiryFormListing">
+                        <input type="hidden" id="listing_institute_id">
+                        <input type="hidden" id="listing_college">
+                        <input type="hidden" id="listing_page_url">
+                        <!-- Honeypot: must stay empty -->
+                        <input type="text" id="listing_honeypot" name="website" style="display:none;" tabindex="-1" autocomplete="off">
+                        <input type="text" id="listing_name" placeholder="Your Name" required>
+                        <input type="email" id="listing_email" placeholder="Email" required>
+                        <input type="text" id="listing_course" placeholder="Course" required>
+                        <input type="text" id="listing_phone" placeholder="Phone" required>
+                        <textarea id="listing_message" placeholder="Message"></textarea>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Page Modal -->
+    <div id="phoneModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">Get Phone Number</div>
+                <div class="modal-body">
+                    <form id="enquiryFormDetails">
+                        <input type="hidden" id="details_institute_id">
+                        <!-- Honeypot: must stay empty -->
+                        <input type="text" id="details_honeypot" name="website" style="display:none;" tabindex="-1" autocomplete="off">
+                        <input type="text" id="details_name" placeholder="Your Name" required>
+                        <input type="email" id="details_email" placeholder="Email" required>
+                        <input type="text" id="details_course" placeholder="Course" required>
+                        <input type="text" id="details_phone" placeholder="Phone" required>
+                        <textarea id="details_message" placeholder="Message"></textarea>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="msg_popup" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="msg_content"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (scripts load here — modals above must exist first) -->
+    @await Html.PartialAsync("_Footer")
+
+</div> <!-- /.wrapper -->
+
+@RenderSection("Scripts", required: false)
+@RenderSection("MetaTags", required: false)
+
+</body>
+</html>

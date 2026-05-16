@@ -1,0 +1,465 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+@{
+    ViewData["Title"] = "list of institutes, colleges, schools, courses Bangalore 2026";
+}
+
+
+<div id="homepage-carousel">
+    <div class="container">
+        <div class="homepage-carousel-wrapper">
+            <div class="row">
+                <div class="col-md-6 col-sm-7">
+                    <div class="image-carousel">
+                        <div class="image-carousel-slide"><img src="/assets/img/bangalore-college-student.jpg" alt="apply to colleges online"style="margin-top:10px;"></div>
+                    </div><!-- /.slider-image -->
+                </div><!-- /.col-md-6 -->
+                <div class="col-md-6 col-sm-5">
+                    <div class="slider-content">
+                        <div class="row">
+                            <div class="col-md-12">
+    <h1>Find the best institute for yourself</h1>
+    <form name="f1" method="POST" action="hpform.asp" onSubmit="return validateForm();">								 
+        <input type="hidden" name="classfn" value="engineering-colleges">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input class="form-control has-dark-background" name="Name" id="slider-name" placeholder="Full Name" type="text">
+                </div>
+            </div><!-- /.col-md-6 -->
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input class="form-control has-dark-background" name="Email" id="slider-email" placeholder="Email" type="email">
+                    <input id="temail" type="text" name="temail" size="25" value="" />
+                </div>
+            </div><!-- /.col-md-6 -->
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input class="form-control has-dark-background" name="Phone" id="slider-email" placeholder="Mobile/Phone" type="text">
+                </div>
+            </div><!-- /.col-md-6 -->
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input class="form-control has-dark-background" name="City" id="slider-name" placeholder="City" type="text">
+                </div>
+            </div><!-- /.col-md-6 -->
+        </div><!-- /.row -->                                    
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <select name="type" class="form-control has-dark-background" onChange="changetype(document.f1.type.value);" style="background-color:#183249; border:none; -webkit-border-radius: 0px;color:#999;font-size:13px;">
+                        <option value="Under 10th std" selected>Under 10th std</option>
+                        <option value="After-School">After School</option>
+                        <option value="diploma-ug">Diploma/Under Graduate</option>
+                        <option value="PG">Post-Graduation</option>      
+                    </select>  
+                </div><!-- /.form-group -->
+            </div><!-- /.col-md-6 -->
+            <div class="col-md-6" id="opt" style="VISIBILITY: visible">
+                <div class="input-group" id="subtitle1" style="VISIBILITY: visible">
+                    <div class="input-group" id="subtitle2" style="VISIBILITY: visible">											
+                        <select name="type1" class="form-control has-dark-background" style="background-color:#183249; border:none; -webkit-border-radius: 0px;color:#999;font-size:13px;">
+                            <option value="Any" selected>---Any---</option>
+                            <option value="PUC-colleges">PUC colleges</option>
+                            <option value="Int-PUC">Integrated PUC colleges</option>
+                            <option value="Govt-PUC">Government PUC colleges</option>
+                            <option value="coaching">Coaching classes</option>
+                            <option value="Study-abroad">Study Abroad</option>
+                        </select>      
+                    </div>
+                </div><!-- /.form-group -->											
+            </div><!-- /.col-md-6 -->
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input class="form-control has-dark-background" name="msg" id="slider-name" placeholder="Message" type="text">
+                </div>
+            </div><!-- /.col-md-6 -->
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <label for="robotCheck">What is 2 + 3?</label> <!-- Simple challenge question -->
+                    <input class="form-control has-dark-background" name="robotAnswer" id="robotCheck" placeholder="Answer the challenge" type="text">
+                </div>
+            </div><!-- /.col-md-6 -->
+        </div><!-- /.row --> 
+        <button type="submit" value="Send Message" class="btn btn-framed pull-right" onClick="everything(this.form)">Submit</button>
+    </form>
+</div><!-- /.col-md-12 -->
+                        </div><!-- /.row -->
+                    </div><!-- /.slider-content -->
+                </div><!-- /.col-md-6 -->
+            </div><!-- /.row -->
+            <div class="background"></div>
+        </div><!-- /.slider-wrapper -->
+        <div class="slider-inner"></div>
+    </div><!-- /.container -->
+</div>
+<!-- News, Events, About -->
+<div class="block">
+    <div class="container">
+	<p align = "center"><a href="/colleges/instituteprofile.asp?collid=p1yyrtrvq!!LM&det=1"><img src="/banners/engineering/dbit-banner.gif" alt="don bosco institute of technology"></a></p>
+        <div class="row">
+            <div class="col-md-4 col-sm-6">
+			 <section class="news-small" id="news-small">
+                    <div class="section-content">
+					<h3>Education News Bangalore</h3>
+					<article>
+                <%While not RSUser.EOF  %>
+                            <figure class="date"><i class="fa fa-newspaper-o" style="color:#e6892c"></i>Posted on: <%= FormatDateTime(RSUser("post_date"), 1) %></figure>
+                            <header><a title="Permalink to <%=RSUser("post_title")%>" rel="bookmark" href="https://blog.bangaloreeducation.com/<%=RSUser("post_name")%>"><b><%=RSUser("post_title")%></b></a></header>
+							<hr />
+								<%
+									RSUser.MoveNext	
+										wend
+									RSUser.close
+								%>
+					</article>
+					</div><!-- /.section-content -->                   
+			 </section><!-- /.news-small -->
+            </div><!-- /.col-md-4 -->
+			<div class="col-md-4 col-sm-6">
+                <section class="events small" id="events-small">
+                    <div class="section-content">
+					<article class="event nearest-second">
+							<a href="/sch/national-public-school-jp-nagar?collid=p1yyrtrvq!!IEH"><img src="/banners/cbse-schools/nps-jpn-banner.webp" alt="NPS JP Nagar" class="add-margin" style="padding-right:5px;"> </a> 
+							<a href="/sch/ekya-school-byrathi?collid=p1yyrtrvq!!EFE"><img src="/banners/schools/ekya-byrathi-banner.webp" alt="Ekya School, Byrathi" class="add-margin" style="padding-right:5px;"></a>
+                        </article>
+					<article class="event"> <a href="/sch/ekya-school-itpl?collid=p1yyrtrvq!!FJJ"><img src="/banners/schools/ekya-itpl-banner.jpg" alt="Ekya School, ITPL" class="add-margin" style="padding-right:5px;"></a>
+					<a href="/sch/new-horizon-public-school?collid=p1yyrtrvq!!IEJ"> <img src="/banners/icse-schools/nhps-banner.webp" alt="New Horizon Public School" class="add-margin" style="padding-right:5px;"></a>
+                     </article>
+                       <article class="event">
+					 <a href="/colleges/design/instituteprofile.asp?collid=p1yyrtrvq!!KLG&det=1">
+                      <img src="/images/banners/banners-2015/msruas-b-design.png" alt="msruas Design college" class="add-margin" style="padding-right:5px;">
+                      </a>
+                        </article> 
+					 	<article class="event nearest-second">
+						<a href="/colleges/hotel-management/instituteprofile.asp?collid=p1yyrtrvq!!LHM&det=1">
+                      <img src="/banners/iihm-banner-2017.jpg" alt="Indian Institute of Hotel Management" class="add-margin" style="padding-right:5px;">
+                      </a>
+                        </article> 						
+                         <!-- /article -->                                               
+                    </div><!-- /.section-content -->                    
+                </section><!-- /.events-small -->
+            </div><!-- /.col-md-4 -->           
+           <div class="col-md-4 col-sm-12">
+                <section id="about">                  
+                    <div class="section-content">
+                        <p><strong>"Bangalore Education is a confluence of people and intellect."</strong> You will have access to quick facts about the city's resources in education, list of top schools, top colleges, the top engineering colleges in karnataka, the top medical colleges, the top ayurvedic colleges, the top dental colleges in Bangalore and throughout Karnataka, articles on thought leadership, invites to seminars. Importantly, you would also get to view opportunities for various courses, check results and so on. </p>
+                       <h5>We'd also like to hear more from you.</h5> 
+					   <a href="/contact/"><b>Contact Us</b></a>
+					   <hr style="padding:0px;"/>
+					   <p><a href="/colleges/puc/mysore/">PUC Colleges in Mysore</a></p>
+					   <p><a href="/colleges/puc/hassan/">PUC Colleges in Hassan</a></p>
+					   <p><a href="/colleges/puc/mangalore/">PUC Colleges in Mangalore</a></p>
+					   <hr style="padding:0px;"/>
+					    <p><a href="/schools/international/mumbai/">List of International Schools in Mumbai</a></p>
+					   <p><a href="/schools/international/new-delhi/">List of International Schools in New Delhi</a></p>
+					   <p><a href="/schools/international/chennai/">List of International Schools in Chennai</a></p>
+					   <p><a href="/schools/international/kolkata/">List of International Schools in Kolkata</a></p>
+					   <p><a href="/schools/dehradun/">List of Top Schools in Dehradun</a></p>
+					   <p><a href="/schools/hyderabad/">List of Top Schools in Hyderabad</a></p>
+					   <p><a href="/schools/mysore/international/">List of International Schools in Mysore</a></p>
+					   <p><a href="/schools/mysore/pre-schools/">List of Pre-Schools in Mysore</a></p>
+                    </div><!-- /.section-content -->                    
+		 <hr style="padding:0px"/ >									
+                </section><!-- /.about -->
+            </div><!-- /.col-md-4 -->                        
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</div>
+<!-- end News, Events, About -->
+<script language="JavaScript">
+function changetype(chosen) {
+var selbox = document.f1.type1;
+selbox.options.length = 0;
+if (chosen == "After-School") {
+subtitle1.style.visibility = 'visible';
+subtitle2.style.visibility = 'visible';
+selbox.options[selbox.options.length] = new
+Option('---Any---','Any');
+selbox.options[selbox.options.length] = new
+Option('PUC colleges','PUC colleges');
+selbox.options[selbox.options.length] = new
+Option('Private PUC colleges','Private PUC colleges');
+selbox.options[selbox.options.length] = new
+Option('Government PUC colleges','Government PUC colleges');
+selbox.options[selbox.options.length] = new
+Option('Coaching classes','Coaching classes');
+selbox.options[selbox.options.length] = new
+Option('Study Abroad','Study Abroad');
+selbox.options[selbox.options.length] = new
+Option('Polytechnic','Polytechnic');
+}
+if (chosen != "After-School" && chosen != "Under 10th std" && chosen != "PG" && chosen != "diploma-ug") {
+subtitle1.style.visibility = 'hidden';
+subtitle2.style.visibility = 'hidden';
+}
+if (chosen == "Under 10th std") {
+selbox.options[selbox.options.length] = new
+Option('---Any---','Any');
+ selbox.options[selbox.options.length] = new
+Option('Coaching classes','Coaching classes');
+selbox.options[selbox.options.length] = new
+Option('Schools for the differently abled','Schools for the differently abled');
+selbox.options[selbox.options.length] = new
+Option('ICSE Schools','ICSE Schools');
+selbox.options[selbox.options.length] = new
+Option('CBSE Schools','CBSE Schools');
+selbox.options[selbox.options.length] = new
+Option('SSLC Schools','SSLC Schools');
+selbox.options[selbox.options.length] = new
+Option('International Schools','International Schools');
+selbox.options[selbox.options.length] = new
+Option('Primary Schools','Primary Schools');
+selbox.options[selbox.options.length] = new
+Option('Pre - Schools','Pre - Schools');
+selbox.options[selbox.options.length] = new
+Option('Montessori','Montessori');
+subtitle1.style.visibility = 'visible';
+subtitle2.style.visibility = 'visible';
+}
+if (chosen == "PG") {
+selbox.options[selbox.options.length] = new
+Option('---Any---','Any');
+ selbox.options[selbox.options.length] = new
+Option('Engineering','Engineering');
+selbox.options[selbox.options.length] = new
+Option('Medicine','Medicine');
+selbox.options[selbox.options.length] = new
+Option('Management','Management');
+selbox.options[selbox.options.length] = new
+Option('Law','Law');
+selbox.options[selbox.options.length] = new
+Option('Architecture','Architecture');
+selbox.options[selbox.options.length] = new
+Option('Dental','Dental');
+selbox.options[selbox.options.length] = new
+Option('Pharmacy','Pharmacy');
+selbox.options[selbox.options.length] = new
+Option('Nursing','Nursing');
+selbox.options[selbox.options.length] = new
+Option('Agricultural Science','Agricultural Science');
+selbox.options[selbox.options.length] = new
+Option('IT','IT');
+subtitle1.style.visibility = 'visible';
+subtitle2.style.visibility = 'visible';
+}
+if (chosen == "diploma-ug") {
+selbox.options[selbox.options.length] = new
+Option('---Any---','Any');
+ selbox.options[selbox.options.length] = new
+Option('Engineering','Engineering');
+selbox.options[selbox.options.length] = new
+Option('Medicine','Medicine');
+selbox.options[selbox.options.length] = new
+Option('Management','Management');
+selbox.options[selbox.options.length] = new
+Option('Law','Law');
+selbox.options[selbox.options.length] = new
+Option('Architecture','Architecture');
+selbox.options[selbox.options.length] = new
+Option('Dental','Dental');
+selbox.options[selbox.options.length] = new
+Option('Pharmacy','Pharmacy');
+selbox.options[selbox.options.length] = new
+Option('Nursing','Nursing');
+selbox.options[selbox.options.length] = new
+Option('Agricultural Science','Agricultural Science');
+selbox.options[selbox.options.length] = new
+Option('IT','IT');
+selbox.options[selbox.options.length] = new
+Option('Polytechnic','Polytechnic');
+subtitle1.style.visibility = 'visible';
+subtitle2.style.visibility = 'visible';
+}
+}
+</script>
+<!-- Our Professors, Gallery -->
+<div class="block">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-sm-4">
+                <section id="our-professors">
+                    <header>
+                        <h2>Studying Abroad</h2>
+                    </header>
+                   <div class="section-content">
+                            <div class="professors">
+                                <ul class="gallery-list">
+                            <li><a href="/study-abroad/usa/" ><img src="/assets/img/flag_1.jpg" alt="study abroad usa"></a></li>
+                            <li><a href="/study-abroad/australia/" ><img src="/assets/img/flag_2.jpg" alt="study abroad australia"></a></li>
+                            <li><a href="/study-abroad/germany/" ><img src="/assets/img/flag_3.jpg" alt="Study Abroad In Germany"></a></li>
+                            <li><a href="/study-abroad/uk/" ><img src="/assets/img/flag_4.jpg" alt="study abroad in UK"></a></li>
+                            <li><a href="/study-abroad/switzerland/" ><img src="/assets/img/flag_5.jpg" alt="study abroad in Switzerland"></a></li>
+                            <li><a href="/study-abroad/singapore/" ><img src="/assets/img/flag_6.jpg" alt="study abroad in Singapore"></a></li>
+                        <a href="/study-abroad/" class="read-more">Explore popular universities to study in, abroad</a>   
+                        </ul>
+							</div><!-- /.professors -->
+                        </div><!-- /.section-content -->
+                </section><!-- /.our-professors -->
+            </div><!-- /.col-md-4 -->
+            <div class="col-md-8 col-sm-8">
+                <section id="gallery">
+                    <header>
+                        <h2>What's the right career for you?</h2>
+                    </header>
+                    <div class="section-content">
+                        <ul class="gallery-list">
+                            <li><a href="/cad-cam-cae-courses-in-bangalore" ><img src="/assets/img/image-01.jpg" alt="cad cam cae courses"></a></li>
+                            <li><a href="/courses/fashion-designing/" ><img src="/assets/img/image-02.jpg" alt="fashion design courses"></a></li>
+                            <li><a href="/animation-multimedia-courses-in-bengaluru/" ><img src="/assets/img/image-03.jpg" alt="animation multimedia courses"></a></li>
+                            <li><a href="/interior-design-courses-in-bengaluru/" ><img src="/assets/img/image-04.jpg" alt="interior design courses"></a></li>
+                            <li><a href="/web-design-courses-in-bangalore/" ><img src="/assets/img/image-05.jpg" alt="web design courses"></a></li>
+                            <li><a href="/air-hostess-courses-in-bangalore/" ><img src="/assets/img/image-06.jpg" alt="air hostess courses"></a></li>
+                            <li><a href="/cabin-crew-courses-in-bangalore/" ><img src="/assets/img/image-07.jpg" alt="cabin crew courses"></a></li>
+                            <li><a href="/travel-agent-air-ticketing-courses-in-bangalore/" ><img src="/assets/img/image-08.jpg" alt="travel agent ticketing course"></a></li>
+                            <li><a href="/embedded-systems-training-in-bangalore/" ><img src="/assets/img/image-09.jpg" alt="embedded systems course"></a></li>
+                            <li><a href="/hardware-networking-courses-in-bangalore/" ><img src="/assets/img/image-10.jpg" alt="hardware networking course"></a></li>
+                            <li><a href="/software-training-institutes-in-bangalore/" ><img src="/assets/img/image-11.jpg" alt="software training course"></a></li>
+                            <li><a href="/software-testing-courses-in-bangalore/" ><img src="/assets/img/image-12.jpg" alt="software testing course"></a></li>
+                            <li><a href="/bpo-call-centre-training-in-bangalore/" ><img src="/assets/img/image-13.jpg" alt="bpo call center training"></a></li>
+                            <li><a href="/event-management-training-institutes-in-bangalore/" ><img src="/assets/img/image-14.jpg" alt="event management course"></a></li>
+                        </ul>                       
+                    </div><!-- /.section-content -->
+                </section><!-- /.gallery -->
+            </div><!-- /.col-md-4 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</div>
+<!-- end Our Professors, Gallery -->
+<!-- Divisions, Connect -->
+<div class="block">
+    <div class="container">
+        <div class="block-dark-background">
+            <div class="row">
+                <div class="col-md-3 col-sm-4">
+                    <section id="division" class="has-dark-background">
+                        <header>
+                            <h3>Science</h3>
+                        </header>
+                        <div class="section-content">
+                            <ul class="list-links">
+                                <li><a href="/engineering/">Engineering</a></li>
+                                <li><a href="/list-of-architecture-colleges-karnataka/">Architecture</a></li>
+                                <li><a href="/medical/">Medical</a></li>
+                                <li><a href="/dental/">Dental</a></li>
+                                <li><a href="/ayurveda/">Ayurvedic Medical</a></li>
+                                <li><a href="/pharmacy-colleges-in-bangalore/">Pharmacy</a></li>
+                                <li><a href="/nursing-colleges-in-bangalore/">Nursing</a></li>
+								<li><a href="/physiotherapy-colleges/">Physiotherapy</a></li>
+								<li><a href="/colleges/agricultural-science/">Agricultural Sciences</a></li>
+								<li><a href="/colleges/information-technology/">Information Technology</a></li>
+								<li><a href="/polytechnic-diploma-colleges-in-bangalore/">Polytechnic, Diploma Courses</a></li>
+                            </ul>
+                        </div><!-- /.section-content -->
+                    </section><!-- #.divisions -->
+                </div>                
+<div class="col-md-3 col-sm-4">
+                    <section id="division2" class="has-dark-background">
+					<header>
+                            <h3>Arts & Design</h3>
+                        </header>
+                        <div class="section-content">
+                            <ul class="list-links">
+                                <li><a href="/colleges/arts-science-commerce/">Arts, Science & Commerce</a></li><!--
+                                --><li><a href="/colleges/design/">Design</a></li><!--
+                                --><li><a href="/colleges/fine-arts/">Fine Arts</a></li> <!--
+								--><li><a href="/colleges/visual-arts/">Visual Arts</a></li><!--
+								--><li><a href="/colleges/jewellery-design-courses/">Jewellery and Accessories Design</a></li><!--	
+								--><li><a href="/cad-cam-cae-courses-in-bangalore/">CAD/CAM/CAE</a></li><!--
+								--><li><a href="/courses/fashion-designing/">Fashion Designing</a></li><!--
+							--><li><a href="/game-design-development-institutes/">Game Design & Development</a></li><!--
+							--><li><a href="/animation-multimedia-courses-in-bengaluru/">Multimedia and Animation</a></li><!--
+							--><li><a href="/interior-design-courses-in-bengaluru/">Interior Design</a></li><!--
+							--><li><a href="/web-design-courses-in-bengaluru/">Web Design</a></li>								
+                            </ul>
+                        </div>
+						<header>
+                            <h3>Schools</h3>
+                        </header>
+                        <div class="section-content">
+                            <ul class="list-links">
+                                <li><a href="/icse-schools-in-bangalore/">ICSE</a></li><!--
+                                --><li><a href="/cbse-schools-in-bangalore/">CBSE</a></li><!--
+                                --><li><a href="/sslc-schools-in-bangalore/">SSLC</a></li><!--
+                                --><li><a href="/international-schools-in-bangalore/">International Schools</a></li><!--
+                                --><li><a href="/list-of-primary-schools-bangalore/">Primary Schools</a></li><!--
+                                --><li><a href="/pre-schools-in-bangalore/">Pre-Schools</a></li><!--
+                                --><li><a href="/schools-for-the-differently-abled/">Schools for the differently abled</a></li><!--
+								--><li><a href="/montessori-schools-in-bangalore/">Montessori</a></li>
+                            </ul>
+                        </div>
+					
+                            <!-- /.section-content -->
+                    </section><!-- #.divisions -->
+                </div>                
+                <div class="col-md-3 col-sm-4">
+                    <section id="division3" class="has-dark-background">
+					<header>
+					<h3>Commerce, Management &amp; Law</h3>
+                        </header>
+                        <div class="section-content">
+                            <ul class="list-links">
+								<li><a href="/colleges/cfa-cpa-ca-cs-cima-courses/">CA, CFA, CPA, CS, CIMA Institutes</a></li><!--
+								--><li><a href="/courses/icwai-institutes/">ICWAI coaching Institutes</a></li><!--
+                                --><li><a href="/colleges/management/">Management</a></li><!--
+								--><li><a href="/colleges/hotel-management/">Hotel Management</a></li><!--
+								--><li><a href="/law-colleges/">Law</a></li>
+							</ul>
+						</div>
+						<header>
+                            <h3>PUC / Std XII</h3>
+                        </header>
+                        <div class="section-content">
+                            <ul class="list-links">
+                                <li><a href="/puc-colleges-in-bangalore/">PUC Colleges</a></li><!-- 
+								--><li><a href="/colleges/puc/mysore/">PUC Colleges in Mysore</a></li><!--
+								--><li><a href="/colleges/puc/hassan/">PUC Colleges in Hassan</a></li><!--
+								--><li><a href="/colleges/puc/mangalore/">PUC Colleges in Mangalore</a></li></ul>
+						</div>
+						<!-- /.section-content -->
+                    </section><!-- #.divisions -->
+                </div>                                
+                <div class="col-md-3 col-sm-4">
+                    <section id="division4" class="has-dark-background">
+                        <header>
+                            <h3>Short Term Career Courses in Bangalore</h3>
+                        </header>
+                        <div class="section-content">
+                            <ul class="list-links">
+                                <li><a href="/cad-cam-cae-courses-in-bangalore/">CAD/CAM/CAE</a></li><!--
+                                --><li><a href="/courses/fashion-designing/">Fashion Designing</a></li><!--
+                                --><li><a href="/animation-multimedia-courses-in-bengaluru/">Multimedia and Animation</a></li><!--
+                                --><li><a href="/interior-design-courses-in-bengaluru/">Interior Design</a></li><!--
+                                --><li><a href="/web-design-courses-in-bengaluru/">Web Design</a></li><!--
+                                --><li><a href="/air-hostess-courses-in-bangalore/">Air Hostess</a></li><!--
+                                --><li><a href="/cabin-crew-courses-in-bangalore/">Cabin Crew</a></li><!--
+								--><li><a href="/travel-agent-air-ticketing-courses-in-bangalore/">Travel Agent, Air Ticketing Courses</a></li><!--
+								--><li><a href="/top-cloud-computing-training-in-bangalore/">Cloud Computing</a></li><!--
+								--><li><a href="/top-big-data-analytics-institutes/">Big Data Analytics</a></li><!--
+								--><li><a href="/top-ai-robotics-training-bangalore/">AI / Robotics</a></li><!--
+								--><li><a href="/best-iot-internet-of-things-training-institutes/">Internet of Things - IOT</a></li><!--
+								--><li><a href="/embedded-systems-training-in-bangalore/">Embedded Systems</a></li><!--
+								--><li><a href="/hardware-networking-courses-in-bangalore/">Hardware and Networking</a></li><!--
+								--><li><a href="/ibm-main-frames-training-in-bangalore/">IBM Mainframe</a></li><!--
+								--><li><a href="/software-training-institutes-in-bangalore/">Software Training Institutes</a></li><!--
+								--><li><a href="/software-testing-courses-in-bangalore/">Software Testing</a></li><!--
+								--><li><a href="/bpo-call-centre-training-in-bangalore/">BPO / Call centre training</a></li><!--
+								--><li><a href="/event-management-training-institutes-in-bangalore/">Event Management</a></li>
+                            </ul>
+                        </div><!-- /.section-content -->
+                    </section><!-- #.divisions -->
+                </div> 
+						
+            </div><!-- /.row -->
+			
+        </div><!-- /.block-dark-background -->
+    </div><!-- /.container -->
+</div>
+<!-- end Divisions, Connect -->
+
+<!-- end Page Content -->dotnet run
