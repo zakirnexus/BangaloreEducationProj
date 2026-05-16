@@ -1,0 +1,1 @@
+.author-carousel{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAFUlEQVQImWNgQAOfPn36T3UBBgYGAO4dEyr8+rCnAAAAAElFTkSuQmCC) repeat}
