@@ -35,6 +35,9 @@ namespace SchoolProject.Models.Courses
         public bool IsActive { get; set; } = true;
 
         public CourseLevel? Level { get; set; }
-        public CourseCategory? Category { get; set; }
+        public CourseCategory? Category { get; set; }      
+
+        [Column("short_name")]
+        public string? ShortName { get; set; }
     }
 }
