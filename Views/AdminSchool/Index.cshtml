@@ -1,0 +1,37 @@
+@model IEnumerable<SchoolProject.Models.School>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Manage Schools";
+}
+<h2>Schools</h2>
+
+<a href="/AdminSchool/Create" class="btn btn-success">Add New School</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>City</th>
+            <th>Syllabus</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.InstituteId</td>
+                <td>@s.InstituteName</td>
+                <td>@s.City?.CityName</td>
+                <td>@s.Syllabus?.SyllabusName</td>
+                <td>
+                    <a href="/AdminSchool/Edit/@s.InstituteId" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="/AdminSchool/Delete/@s.InstituteId"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete this school?')">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

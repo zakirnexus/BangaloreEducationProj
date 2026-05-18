@@ -1,0 +1,111 @@
+@model List<SchoolProject.Models.Colleges.College>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Manage Colleges";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Manage Colleges</h2>
+        <a href="/AdminCollege/Create" class="btn btn-primary">
+            <i class="bi bi-plus"></i> Add New College
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Search college name..." value="@Context.Request.Query["search"]" />
+                </div>
+                <div class="col-md-3">
+                    <select name="cityId" class="form-select">
+                        <option value="">All Cities</option>
+                        @foreach (var city in ViewBag.Cities)
+                        {
+                            <option value="@city.CityId" selected="@(Context.Request.Query["cityId"] == city.CityId.ToString() ? "selected" : null)">@city.CityName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Colleges Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Logo</th>
+                            <th>College Name</th>
+                            <th>City</th>
+                            <th>Courses</th>
+                            <th>Rank</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var college in Model)
+                        {
+                            <tr>
+                                <td>@college.InstituteId</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(college.Logo))
+                                    {
+                                        <img src="@college.Logo" alt="" style="height: 40px;" />
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@college.InstituteName</strong><br />
+                                    <small class="text-muted">@college.InstituteSlug</small>
+                                </td>
+                                <td>@college.City?.CityName</td>
+                                <td>
+                                    <a href="/AdminCollege/Courses?collegeId=@college.InstituteId" class="btn btn-sm btn-outline-info">
+                                        Manage (@(college.CollegeCourses?.Count ?? 0))
+                                    </a>
+                                </td>
+                                <td>
+                                    @if (college.IsSponsored)
+                                    {
+                                        <span class="badge bg-warning">Sponsored</span>
+                                    }
+                                    else if (college.ListingRank > 0)
+                                    {
+                                        <span class="badge bg-info">Rank @college.ListingRank</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Regular</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (college.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="/AdminCollege/Edit/@college.InstituteId" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="/AdminCollege/Delete/@college.InstituteId" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

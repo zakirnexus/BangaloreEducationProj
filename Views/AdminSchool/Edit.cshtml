@@ -1,0 +1,48 @@
+@model SchoolProject.Models.School
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Edit Schools";
+}
+<h2>Edit School</h2>
+
+<form method="post">
+
+    <input type="hidden" asp-for="InstituteId" />
+
+    <div class="form-group">
+        <label>Name</label>
+        <input asp-for="InstituteName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Slug</label>
+        <input asp-for="InstituteSlug" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>City</label>
+        <select asp-for="CityId" class="form-control">
+            @foreach (var c in ViewBag.Cities)
+            {
+                <option value="@c.city_id" selected="@(Model.CityId == c.city_id)">
+                    @c.CityName
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Syllabus</label>
+        <select asp-for="SyllabusId" class="form-control">
+            @foreach (var s in ViewBag.Syllabuses)
+            {
+                <option value="@s.SyllabusId" selected="@(Model.SyllabusId == s.SyllabusId)">
+                    @s.SyllabusName
+                </option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+
+</form>

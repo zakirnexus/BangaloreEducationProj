@@ -1,0 +1,103 @@
+@* College Filter Panel - Fixed: removed .Cast<dynamic>() calls *@
+
+@{
+    var selLocality = ViewBag.SelLocality as int?;
+    var selNsewc = ViewBag.SelNsewc as string;
+    var selCoed = ViewBag.SelCoed as int?;
+    var selOwner = ViewBag.SelOwnership as int?;
+    var selFees = ViewBag.SelFees as string;
+    var courseSlug = ViewBag.Course as string ?? "colleges";
+    var citySlug = ViewBag.City as string ?? "bangalore";
+
+    bool anyFilterActive = selLocality != null || selNsewc != null || selCoed != null || selOwner != null || selFees != null;
+}
+
+<form method="get" action="/@(courseSlug)-colleges-in-@(citySlug)" class="filter-form">
+
+    @* -- LOCALITY -- *@
+    @if (ViewBag.Localities != null)
+    {
+        <div class="mb-3">
+            <label class="form-label fw-bold">Locality</label>
+            <select name="locality" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Localities</option>
+                @foreach (var loc in ViewBag.Localities)
+                {
+                    bool isSelected = selLocality.HasValue && selLocality.Value == (int)loc.LocalityId;
+                    <option value="@loc.LocalityId" selected="@(isSelected ? "selected" : null)">@loc.LocalityName</option>
+                }
+            </select>
+        </div>
+    }
+
+    @* -- AREA (NSEWC) -- *@
+    @if (ViewBag.NsewcOptions != null)
+    {
+        <div class="mb-3">
+            <label class="form-label fw-bold">Area</label>
+            <select name="nsewc" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Areas</option>
+                @foreach (var n in ViewBag.NsewcOptions)
+                {
+                    bool isSelected = !string.IsNullOrEmpty(selNsewc) && string.Equals(selNsewc, (string)n, StringComparison.OrdinalIgnoreCase);
+                    <option value="@n" selected="@(isSelected ? "selected" : null)">@n</option>
+                }
+            </select>
+        </div>
+    }
+
+    @* -- GENDER TYPE -- *@
+    @if (ViewBag.CoedOptions != null)
+    {
+        <div class="mb-3">
+            <label class="form-label fw-bold">Gender Type</label>
+            <select name="coedId" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var c in ViewBag.CoedOptions)
+                {
+                    bool isSelected = selCoed.HasValue && selCoed.Value == (int)c.CoedId;
+                    <option value="@c.CoedId" selected="@(isSelected ? "selected" : null)">@c.CoedName</option>
+                }
+            </select>
+        </div>
+    }
+
+    @* -- OWNERSHIP -- *@
+    @if (ViewBag.OwnerOptions != null)
+    {
+        <div class="mb-3">
+            <label class="form-label fw-bold">Ownership</label>
+            <select name="ownershipId" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var o in ViewBag.OwnerOptions)
+                {
+                    int oid = (int)o.InstOwnershipId;
+                    bool isSelected = selOwner.HasValue && selOwner.Value == oid;
+                    <option value="@oid" selected="@(isSelected ? "selected" : null)">@o.Type</option>
+                }
+            </select>
+        </div>
+    }
+
+    @* -- FEES RANGE -- *@
+    <div class="mb-3">
+        <label class="form-label fw-bold">Annual Fees</label>
+        <select name="feesRange" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="">All Ranges</option>
+            <option value="below-1l" selected="@(selFees == "below-1l" ? "selected" : null)">Below 1 Lakh</option>
+            <option value="1l-2l" selected="@(selFees == "1l-2l" ? "selected" : null)">1 - 2 Lakhs</option>
+            <option value="2l-3l" selected="@(selFees == "2l-3l" ? "selected" : null)">2 - 3 Lakhs</option>
+            <option value="3l-5l" selected="@(selFees == "3l-5l" ? "selected" : null)">3 - 5 Lakhs</option>
+            <option value="above-5l" selected="@(selFees == "above-5l" ? "selected" : null)">Above 5 Lakhs</option>
+        </select>
+    </div>
+
+    @* -- CLEAR -- only when a filter is active -- *@
+    @if (anyFilterActive)
+    {
+        <div class="mb-3">
+            <a href="/@(courseSlug)-colleges-in-@(citySlug)" class="btn btn-sm btn-outline-danger w-100">Clear Filters</a>
+        </div>
+    }
+
+</form>

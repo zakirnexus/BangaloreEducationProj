@@ -1,0 +1,101 @@
+@model string
+@{
+// Layout passes "col-md-2" on filter pages, "col-md-4" elsewhere.
+// Default to col-md-4 if no model provided.
+var colClass = string.IsNullOrEmpty(Model) ? "col-md-4" : Model;
+// On col-md-2 sidebar, use smaller font so links don't wrap awkwardly
+var sidebarStyle = (colClass == "col-md-2") ? "font-size:12px;" : "";
+}
+<div class="@colClass" style="@sidebarStyle">
+	<div id="page-sidebar" class="sidebar">
+
+		<!-- ✅ DYNAMIC SIDEBAR -->
+		@{
+		var sidebar = ViewBag.Sidebar as dynamic;
+		}
+
+		@if (sidebar != null && sidebar.Sections != null)
+		{
+		foreach (var sec in sidebar.Sections)
+		{
+		<aside class="panel panel-default">
+			<div class="panel-body">
+				<h3>@sec.Heading</h3>
+				<ul class="list-unstyled">
+					@foreach (var item in sec.Items)
+					{
+					<li>
+						<a href="@item.Url">@item.Title</a>
+						@if (!string.IsNullOrEmpty(item.Subtitle))
+						{
+						<div class="small text-muted">@item.Subtitle</div>
+						}
+					</li>
+					}
+				</ul>
+			</div>
+		</aside>
+		}
+		}
+
+		<!-- ✅ ADS (KEEP STATIC) -->
+		<aside class="events small">
+			<div class="section-content">
+				<article class="event">
+					<a href="/sch/skei?collid=p1yyrtrvq!!FIF">
+						<img src="/banners/schools/cbse/skei-banner.webp" alt="SKEI" class="add-margin" style="padding-right:5px;">
+					</a>
+					<a href="/sch/treamis-world-school?collid=p1yyrtrvq!!JEH">
+						<img src="/banners/international-schools/treamis-world-school.webp" alt="treamis world school" class="add-margin">
+					</a>
+				</article>
+				<article class="event">
+					<a href="/sch/school-of-india?collid=p1yyrtrvq!!JDJ">
+						<img src="/banners/cbse-schools/school-of-india.webp" alt="School of India (CBSE)" class="add-margin" style="padding-right:5px;">
+                    </a>
+				</article>
+			</div>
+		</aside>
+
+		<!-- ✅ STUDY ABROAD (OPTIONAL STATIC) -->
+		<aside>
+			<header>
+				<h3>Study Abroad</h3>
+			</header>
+			<ul class="list-inline">
+				<li>
+					<a href="/study-abroad/usa/">
+						<img src="/assets/img/flag_1.jpg">
+					</a>
+				</li>
+				<li>
+					<a href="/study-abroad/australia/">
+						<img src="/assets/img/flag_2.jpg">
+					</a>
+				</li>
+				<li>
+					<a href="/study-abroad/germany/">
+						<img src="/assets/img/flag_3.jpg">
+					</a>
+				</li>
+				<li>
+					<a href="/study-abroad/uk/">
+						<img src="/assets/img/flag_4.jpg">
+					</a>
+				</li>
+				<li>
+					<a href="/study-abroad/switzerland/">
+						<img src="/assets/img/flag_5.jpg">
+					</a>
+				</li>
+				<li>
+					<a href="/study-abroad/singapore/">
+						<img src="/assets/img/flag_6.jpg">
+					</a>
+				</li>
+			</ul>
+			<a href="/study-abroad/" class="read-more">Explore popular universities abroad</a>
+		</aside>
+
+	</div>
+</div>
