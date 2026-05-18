@@ -1,0 +1,233 @@
+@* School Filter Panel - Bootstrap 3 compatible, no tag helper conflicts *@
+
+@{
+    var selLocality = ViewBag.SelLocality as int?;
+    var selNsewc = ViewBag.SelNsewc as string;
+    var selCoed = ViewBag.SelCoed as int?;
+    var selOwner = ViewBag.SelOwnership as int?;
+    var selFees = ViewBag.SelFees as string;
+    var selSyllabus = ViewBag.SelSyllabus as int?;
+    var selBoard = ViewBag.SelBoard as int?;
+    var selType = ViewBag.SelType as int?;
+    var selCategory = ViewBag.SelCategory as int?;
+    var selClassification = ViewBag.SelClassification as int?;
+    var selMedium = ViewBag.SelMedium as int?;
+    var selMgmt = ViewBag.SelMgmt as int?;
+
+    bool anyFilterActive = selLocality != null || selNsewc != null || selCoed != null 
+                        || selOwner != null || selFees != null || selSyllabus != null
+                        || selBoard != null || selType != null || selCategory != null
+                        || selClassification != null || selMedium != null || selMgmt != null;
+
+    var citySlug = ViewBag.CitySlug as string ?? "bangalore";
+    var categorySlug = ViewBag.CategorySlug as string ?? "schools";
+}
+
+<form method="get" action="/@(categorySlug)-in-@(citySlug)" class="filter-form">
+
+    @* -- LOCALITY -- *@
+    @if (ViewBag.Localities != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Locality</label>
+            <select name="locality" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All Localities</option>
+                @foreach (var loc in ViewBag.Localities)
+                {
+                    string selectedAttr = (selLocality.HasValue && selLocality.Value == (int)loc.LocalityId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{loc.LocalityId}\" {selectedAttr}>{loc.LocalityName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- AREA (NSEWC) -- *@
+    @if (ViewBag.NsewcOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Area</label>
+            <select name="nsewc" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All Areas</option>
+                @foreach (var n in ViewBag.NsewcOptions)
+                {
+                    string selectedAttr = (!string.IsNullOrEmpty(selNsewc) && string.Equals(selNsewc, (string)n, StringComparison.OrdinalIgnoreCase)) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{n}\" {selectedAttr}>{n}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- GENDER TYPE -- *@
+    @if (ViewBag.CoedOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Gender Type</label>
+            <select name="coedId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var c in ViewBag.CoedOptions)
+                {
+                    string selectedAttr = (selCoed.HasValue && selCoed.Value == (int)c.CoedId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{c.CoedId}\" {selectedAttr}>{c.CoedName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- OWNERSHIP -- *@
+    @if (ViewBag.OwnerOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Ownership</label>
+            <select name="ownershipId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var o in ViewBag.OwnerOptions)
+                {
+                    int oid = (int)o.InstOwnershipId;
+                    string selectedAttr = (selOwner.HasValue && selOwner.Value == oid) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{oid}\" {selectedAttr}>{o.Type}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- SYLLABUS -- *@
+    @if (ViewBag.SyllabusOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Syllabus</label>
+            <select name="syllabusId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var s in ViewBag.SyllabusOptions)
+                {
+                    string selectedAttr = (selSyllabus.HasValue && selSyllabus.Value == (int)s.SyllabusId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{s.SyllabusId}\" {selectedAttr}>{s.SyllabusName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- BOARD -- *@
+    @if (ViewBag.BoardOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Board</label>
+            <select name="boardId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var b in ViewBag.BoardOptions)
+                {
+                    string selectedAttr = (selBoard.HasValue && selBoard.Value == (int)b.BoardId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{b.BoardId}\" {selectedAttr}>{b.BoardName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- SCHOOL TYPE -- *@
+    @if (ViewBag.TypeOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">School Type</label>
+            <select name="typeId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var t in ViewBag.TypeOptions)
+                {
+                    string selectedAttr = (selType.HasValue && selType.Value == (int)t.TypeId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{t.TypeId}\" {selectedAttr}>{t.TypeName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- CATEGORY -- *@
+    @if (ViewBag.CategoryOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Category</label>
+            <select name="categoryId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var cat in ViewBag.CategoryOptions)
+                {
+                    string selectedAttr = (selCategory.HasValue && selCategory.Value == (int)cat.CategoryId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{cat.CategoryId}\" {selectedAttr}>{cat.CategoryName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- CLASSIFICATION -- *@
+    @if (ViewBag.ClassificationOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Classification</label>
+            <select name="classificationId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var cls in ViewBag.ClassificationOptions)
+                {
+                    string selectedAttr = (selClassification.HasValue && selClassification.Value == (int)cls.ClassificationId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{cls.ClassificationId}\" {selectedAttr}>{cls.ClassificationName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- MEDIUM -- *@
+    @if (ViewBag.MediumOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Medium</label>
+            <select name="mediumId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var m in ViewBag.MediumOptions)
+                {
+                    string selectedAttr = (selMedium.HasValue && selMedium.Value == (int)m.MediumId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{m.MediumId}\" {selectedAttr}>{m.MediumName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- MANAGEMENT -- *@
+    @if (ViewBag.MgmtOptions != null)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Management</label>
+            <select name="mgmtId" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var m in ViewBag.MgmtOptions)
+                {
+                    string selectedAttr = (selMgmt.HasValue && selMgmt.Value == (int)m.MgmtId) ? "selected=\"selected\"" : "";
+                    @Html.Raw($"<option value=\"{m.MgmtId}\" {selectedAttr}>{m.MgmtName}</option>")
+                }
+            </select>
+        </div>
+    }
+
+    @* -- FEES RANGE -- *@
+    <div class="form-group" style="margin-bottom:8px;">
+        <label style="font-size:11px; font-weight:bold; text-transform:uppercase; color:#666; display:block; margin-bottom:3px;">Annual Fees</label>
+        <select name="feesRange" class="form-control input-sm" style="width:100%; font-size:12px; padding:2px;" onchange="this.form.submit()">
+            <option value="">All Ranges</option>
+            @{
+                string sel1 = selFees == "below-50k" ? "selected=\"selected\"" : "";
+                string sel2 = selFees == "50k-1l" ? "selected=\"selected\"" : "";
+                string sel3 = selFees == "1l-2l" ? "selected=\"selected\"" : "";
+                string sel4 = selFees == "2l-3l" ? "selected=\"selected\"" : "";
+                string sel5 = selFees == "above-3l" ? "selected=\"selected\"" : "";
+            }
+            @Html.Raw($"<option value=\"below-50k\" {sel1}>Below 50K</option>")
+            @Html.Raw($"<option value=\"50k-1l\" {sel2}>50K - 1 Lakh</option>")
+            @Html.Raw($"<option value=\"1l-2l\" {sel3}>1 - 2 Lakhs</option>")
+            @Html.Raw($"<option value=\"2l-3l\" {sel4}>2 - 3 Lakhs</option>")
+            @Html.Raw($"<option value=\"above-3l\" {sel5}>Above 3 Lakhs</option>")
+        </select>
+    </div>
+
+    @* -- CLEAR -- only when a filter is active -- *@
+    @if (anyFilterActive)
+    {
+        <div class="form-group" style="margin-bottom:8px;">
+            <a href="/@(categorySlug)-in-@(citySlug)" class="btn btn-danger btn-xs" style="width:100%;">Clear Filters</a>
+        </div>
+    }
+
+</form>

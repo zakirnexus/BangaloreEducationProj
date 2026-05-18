@@ -1,0 +1,53 @@
+@model List<SchoolProject.Models.Enquiry>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Admin Dashboard";
+}
+<h2>Enquiries</h2>
+
+<!-- 🔍 FILTER FORM -->
+<form method="get" class="form-inline" style="margin-bottom:15px;">
+    <input type="text" name="school" placeholder="School name"
+           value="@Context.Request.Query["school"]" class="form-control" />
+
+    <input type="date" name="fromDate"
+           value="@Context.Request.Query["fromDate"]"
+           class="form-control" />
+
+    <input type="date" name="toDate"
+           value="@Context.Request.Query["toDate"]"
+           class="form-control" />
+
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<!-- 📊 TABLE -->
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>School</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Course</th>
+            <th>Message</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@(e.EntryDate?.ToString("dd MMM yyyy hh:mm tt"))</td>
+                <td>@e.School?.InstituteName</td>
+                <td>@e.Name</td>
+                <td>@e.Email</td>
+                <td>@e.Phone</td>
+                <td>@e.Course</td>
+                <td>@e.Message</td>
+            </tr>
+        }
+
+    </tbody>
+</table>

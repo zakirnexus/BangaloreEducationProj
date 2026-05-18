@@ -1,0 +1,247 @@
+@model SchoolProject.Models.School
+
+<!-- ✅ BREADCRUMB -->
+<div class="breadcrumb-wrapper">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li>
+            <a href="/@(Model?.Syllabus?.SyllabusSlug)-schools-in-@(Model?.City?.CitySlug)">
+                @Model.Syllabus?.SyllabusName Schools in @Model.City?.CityName
+            </a>
+        </li>
+        <li class="active">@(Model?.InstituteName ?? "School")</li>
+    </ol>
+</nav>
+</div>
+<div style="height:20px;"></div>
+<!-- ✅ BREADCRUMB SCHEMA -->
+<script type="application/ld+json">
+@Html.Raw($@"
+{{
+  ""@context"": ""https://schema.org"",
+  ""@type"": ""BreadcrumbList"",
+  ""itemListElement"": [
+    {{
+      ""@type"": ""ListItem"",
+      ""position"": 1,
+      ""name"": ""Home"",
+      ""item"": ""{Context.Request.Scheme}://{Context.Request.Host}/""
+    }},
+    {{
+      ""@type"": ""ListItem"",
+      ""position"": 2,
+      ""name"": ""{Model?.Syllabus?.SyllabusName ?? ""} Schools in {Model?.City?.CityName}"",
+      ""item"": ""{Context.Request.Scheme}://{Context.Request.Host}/{Model?.Syllabus?.SyllabusSlug}-schools-in-{Model?.City?.CitySlug}""
+    }},
+    {{
+      ""@type"": ""ListItem"",
+      ""position"": 3,
+      ""name"": ""{Model?.InstituteName}"",
+      ""item"": ""{Context.Request.Scheme}://{Context.Request.Host}/school/{Model?.InstituteSlug}""
+    }}
+  ]
+}}
+")
+</script>
+<script>
+    var isDetailsPage = true;
+</script>
+
+<!-- ✅ HEADER -->
+<section class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+
+            <!-- LOGO -->
+            @if (!string.IsNullOrEmpty(Model?.Logo))
+            {
+                <div class="col-sm-2 col-xs-12" style="margin-bottom:10px;">
+                    <img src="@Model.Logo"
+                         alt="@(Model?.InstituteName ?? "School") logo"
+                         style="max-height:80px; max-width:120px; width:auto; height:auto; display:block; margin:0 auto;">
+                </div>
+            }
+
+            <!-- DETAILS -->
+            <div class="col-sm-10">
+
+                <h1 class="school-title">
+                    @(Model?.InstituteName ?? "N/A"), @(Model?.City?.CityName ?? "N/A")
+                </h1>
+
+                <h2 class="seo-subheading">
+                    Admission, Fees, Reviews & Details
+                </h2>
+
+                <p class="school-address">
+                    <i class="fa fa-map-marker"></i>
+                    @(Model?.Address ?? "N/A"),
+                    @(Model?.City?.CityName ?? "N/A") -
+                    @(Model?.Pincode ?? "N/A")
+                </p>
+
+                <!-- META INFO -->
+                <div class="school-meta">
+
+                    @if (!string.IsNullOrEmpty(Model?.Accreditation))
+                    {
+                        <span><i class="fa fa-certificate"></i> <strong>Accredited:</strong> @Model.Accreditation</span>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model?.ApprovedBy))
+                    {
+                        <span><i class="fa fa-cog"></i> <strong>Approval:</strong> @Model.ApprovedBy</span>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model?.Status))
+                    {
+                        <span><i class="fa fa-gavel"></i> @Model.Status</span>
+                    }
+
+                </div>
+
+                <!-- ESTD -->
+                @if (!string.IsNullOrEmpty(Model?.Estd))
+                {
+                    <p class="school-estd">
+                        <strong>Established:</strong> @Model.Estd
+                    </p>
+                }
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ✅ DYNAMIC SEO CONTENT -->
+@if (!string.IsNullOrEmpty(ViewBag.DetailContent))
+{
+    <section class="panel panel-default">
+        <div class="panel-body">
+            @Html.Raw(ViewBag.DetailContent)
+        </div>
+    </section>
+}
+
+<!-- ✅ RANKINGS -->
+@if (ViewBag.Rankings is IEnumerable<dynamic> rankings && rankings.Any())
+{
+    <section class="panel panel-default">
+        <div class="panel-body">
+
+            <h3>Rankings</h3>
+
+            <div class="school-rankings">
+                @foreach (var r in rankings)
+                {
+                    <span>
+                        <i class="fa fa-trophy"></i>
+                        <strong>@(r?.RankingBody ?? "") @(r?.Year ?? ""):</strong> @(r?.Rank ?? "")
+                    </span>
+                }
+            </div>
+
+        </div>
+    </section>
+}
+
+<!-- 🏫 IMAGE -->
+@if (!string.IsNullOrEmpty(Model?.Photos))
+{
+    <section class="panel panel-default" style="margin-bottom:20px;">
+        <div class="panel-body" style="padding:0;">
+            <img src="@Model.Photos"
+                 alt="@Model.InstituteName campus"
+                 class="img-responsive"
+                 style="width:100%; height:auto; border-radius:4px;">
+        </div>
+    </section>
+}
+
+<!-- MAIN CONTENT -->
+<div class="row">
+
+    <div class="col-md-8 col-sm-12">
+        <div id="page-main">
+
+            <!-- 📞 PHONE CTA -->
+            <section>
+            <a href="javascript:void(0);"
+                class="btn-phone-details"
+                data-id="@Model?.InstituteId">
+                    <div class="phone-box">
+                        <i class="fa fa-phone"></i>
+                        <strong id="phoneText">Click Here for Phone Number</strong>
+                    </div>
+            </a>
+            </section>
+
+            <!-- 📚 DETAILS -->
+            <section>
+
+                @if (!string.IsNullOrEmpty(Model?.ClassesLevels))
+                {
+                    <p>
+                        <strong>Classes</strong><br />
+                        @Model.ClassesLevels
+                    </p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model?.SyllabusAffiliation))
+                {
+                    <p>
+                        <strong>Syllabi Followed</strong><br />
+                        @Model.SyllabusAffiliation
+                    </p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model?.FeesStructure))
+                {
+                    <p>
+                        <strong>Annual Fees</strong><br />
+                        @Html.Raw(Model.FeesStructure)
+                    </p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model?.CoedName))
+                {
+                    <p>
+                        <strong>Gender Type</strong><br />
+                        @Model.CoedName
+                    </p>
+                }
+
+            </section>
+
+            <!-- ✅ ABOUT (ONLY ONCE - FIXED) -->
+            @if (!string.IsNullOrEmpty(Model?.MetaDescription))
+            {
+                <section class="panel panel-default">
+                    <div class="panel-body">
+                        <h3>About School</h3>
+                        <p>@Model.MetaDescription</p>
+                    </div>
+                </section>
+            }
+
+            <!-- APPLY BUTTON -->
+            @if (Model != null && Model.InstituteId > 0)
+            {
+                <div style="margin-top:15px;">
+                    <a href="javascript:void(0);" class="btn btn-primary btn-enquiry"
+                            data-id="@Model.InstituteId"
+                            data-college="@Model.InstituteName">
+                        Apply Now
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>
+
+
+
+

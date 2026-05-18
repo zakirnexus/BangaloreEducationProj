@@ -1,0 +1,174 @@
+@model SchoolProject.Models.Colleges.College
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = $"Manage Courses - {Model.InstituteName}";
+    var allCourses = ViewBag.AllCourses as IEnumerable<SchoolProject.Models.Courses.Course> ?? Enumerable.Empty<SchoolProject.Models.Courses.Course>();
+    var allSpecializations = ViewBag.Specializations as IEnumerable<SchoolProject.Models.Courses.Specialization> ?? Enumerable.Empty<SchoolProject.Models.Courses.Specialization>();
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/AdminCollege">Colleges</a></li>
+            <li class="breadcrumb-item"><a href="/AdminCollege/Edit/@Model.InstituteId">@Model.InstituteName</a></li>
+            <li class="breadcrumb-item active">Manage Courses</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2><i class="bi bi-mortarboard me-2"></i>Manage Courses</h2>
+            <p class="text-muted mb-0">@Model.InstituteName</p>
+        </div>
+        <a href="/AdminCollege/Edit/@Model.InstituteId" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to College
+        </a>
+    </div>
+    <hr />
+
+    <!-- Current Courses -->
+    <div class="card admin-card mb-4">
+        <div class="card-header">
+            <i class="bi bi-list-check me-2"></i>Current Courses
+        </div>
+        <div class="card-body p-0">
+            @if (Model.CollegeCourses != null && Model.CollegeCourses.Any(cc => cc.IsActive))
+            {
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Specialization</th>
+                            <th>Fees Structure</th>
+                            <th>Entrance Exam</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cc in Model.CollegeCourses.Where(cc => cc.IsActive))
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@cc.Course?.CourseName</strong>
+                                    <br /><small class="text-muted">@cc.Course?.CourseFullName</small>
+                                </td>
+                                <td>@(cc.SpecializationNav != null
+                                    ? cc.SpecializationNav.SpecializationName
+                                    : "-")</td>
+                                <td>@(string.IsNullOrEmpty(cc.FeesStructure) ? "-" : cc.FeesStructure)</td>
+                                <td>@(string.IsNullOrEmpty(cc.EntranceExam) ? "-" : cc.EntranceExam)</td>
+                                <td>@(string.IsNullOrEmpty(cc.CourseDuration) ? "-" : cc.CourseDuration)</td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                </td>
+                                <td>
+                                    <form asp-action="RemoveCourse" method="post" class="d-inline" 
+                                          onsubmit="return confirm('Remove this course from the college?');">
+                                        <input type="hidden" name="collegeCourseId" value="@cc.CollegeCourseId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Remove
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="p-4 text-center text-muted">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    No courses assigned to this college yet.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Add New Course -->
+    <div class="card admin-card">
+        <div class="card-header">
+            <i class="bi bi-plus-circle me-2"></i>Add New Course
+        </div>
+        <div class="card-body">
+            <form asp-action="AddCourse" method="post">
+                <input type="hidden" name="instituteId" value="@Model.InstituteId" />
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Course <span class="text-danger">*</span></label>
+                        <select name="courseId" id="courseDropdown" class="form-select" required>
+                            <option value="">-- Select Course --</option>
+                            @foreach (var course in allCourses)
+                            {
+                                <option value="@course.CourseId" data-course="@course.CourseId">@course.CourseName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                    <label class="form-label">Specialization</label>
+                    <select name="specializationId" id="specializationDropdown" class="form-select">
+                        <option value="">-- Select Specialization --</option>
+                        @foreach (var spec in allSpecializations)
+                        {
+                            <option value="@spec.SpecializationId" data-course="@spec.CourseId" style="display:none;">
+                                @spec.SpecializationName
+                            </option>
+                        }
+                    </select>
+                    <small class="text-muted">Select a course first to see specializations</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Fees Structure</label>
+                        <input type="text" name="feesStructure" class="form-control" placeholder="e.g., 2,00,000 - 4,00,000 per year" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Entrance Exam</label>
+                        <input type="text" name="entranceExam" class="form-control" placeholder="e.g., KCET / COMEDK" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Course Duration</label>
+                        <input type="text" name="courseDuration" class="form-control" placeholder="e.g., 4 Years" />
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-admin btn-admin-primary">
+                            <i class="bi bi-plus-lg me-1"></i> Add Course
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('courseDropdown').addEventListener('change', function() {
+            var selectedCourseId = this.value;
+            var specDropdown = document.getElementById('specializationDropdown');
+            var options = specDropdown.querySelectorAll('option');
+            
+            // Reset selection
+            specDropdown.value = '';
+            
+            // Show/hide specializations based on selected course
+            options.forEach(function(opt) {
+                if (opt.value === '') {
+                    opt.style.display = ''; // Always show "-- Select --"
+                } else if (opt.getAttribute('data-course') === selectedCourseId) {
+                    opt.style.display = '';
+                } else {
+                    opt.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}

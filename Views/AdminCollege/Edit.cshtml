@@ -1,0 +1,277 @@
+@model SchoolProject.Models.Colleges.College
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Edit College";
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/AdminCollege">Colleges</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </nav>
+
+    <h2><i class="bi bi-pencil-square me-2"></i>Edit College</h2>
+    <p class="text-muted">@Model.InstituteName</p>
+    <hr />
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="InstituteId" />
+        <input type="hidden" asp-for="InstituteSlug" />
+        <input type="hidden" asp-for="CreatedDate" />
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="InstituteName" class="form-label">College Name <span class="text-danger">*</span></label>
+                    <input asp-for="InstituteName" class="form-control" required />
+                    <span asp-validation-for="InstituteName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="InstituteSlug" class="form-label">Slug</label>
+                    <input asp-for="InstituteSlug" class="form-control" readonly />
+                    <small class="text-muted">Auto-generated from name. Edit to change URL.</small>
+                </div>
+
+                <div class="mb-3">
+                <label asp-for="CityId" class="form-label">City <span class="text-danger">*</span></label>
+                <select asp-for="CityId" class="form-select" asp-items="@(new SelectList(ViewBag.Cities, "CityId", "CityName"))" required>
+                    <option value="">-- Select City --</option>
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LocalityId" class="form-label">Locality</label>
+                    <select asp-for="LocalityId" class="form-select" asp-items="@(new SelectList(ViewBag.Localities, "LocalityId", "LocalityName"))">
+                        <option value="">-- Select Locality --</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="StateId" class="form-label">State</label>
+                    <select asp-for="StateId" class="form-select" asp-items="@(new SelectList(ViewBag.States, "StateId", "StateName"))">
+                        <option value="">-- Select State --</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label">Address</label>
+                    <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Pincode" class="form-label">Pincode</label>
+                    <input asp-for="Pincode" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Telephone" class="form-label">Telephone</label>
+                    <input asp-for="Telephone" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Mobile" class="form-label">Mobile</label>
+                    <input asp-for="Mobile" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" type="email" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email2" class="form-label">Email 2</label>
+                    <input asp-for="Email2" class="form-control" type="email" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Website" class="form-label">Website</label>
+                    <input asp-for="Website" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Estd" class="form-label">Established Year</label>
+                    <input asp-for="Estd" class="form-control" />
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="CoedId" class="form-label">Coed Status</label>
+                    <select asp-for="CoedId" class="form-select" asp-items="@(new SelectList(ViewBag.Coeds, "CoedId", "CoedName"))">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="InstOwnershipId" class="form-label">Ownership</label>
+                    <select asp-for="InstOwnershipId" class="form-select" asp-items="@(new SelectList(ViewBag.Ownerships, "InstOwnershipId", "InstOwnershipType"))">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Accreditation" class="form-label">Accreditation</label>
+                    <input asp-for="Accreditation" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NaacGrade" class="form-label">NAAC Grade</label>
+                    <input asp-for="NaacGrade" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NbaAccredited" class="form-label">NBA Accredited</label>
+                    <select asp-for="NbaAccredited" class="form-select">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ApprovedBy" class="form-label">Approved By</label>
+                    <input asp-for="ApprovedBy" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AffiliatedTo" class="form-label">Affiliated To</label>
+                    <input asp-for="AffiliatedTo" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label">Status</label>
+                    <input asp-for="Status" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PlacementPercentage" class="form-label">Placement Percentage</label>
+                    <input asp-for="PlacementPercentage" class="form-control" type="number" min="0" max="100" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AvgPackageLpa" class="form-label">Average Package (LPA)</label>
+                    <input asp-for="AvgPackageLpa" class="form-control" type="number" step="0.01" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TopRecruiters" class="form-label">Top Recruiters</label>
+                    <textarea asp-for="TopRecruiters" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ScholarshipDetails" class="form-label">Scholarship Details</label>
+                    <textarea asp-for="ScholarshipDetails" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MetaTitle" class="form-label">Meta Title</label>
+                    <input asp-for="MetaTitle" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MetaDescription" class="form-label">Meta Description</label>
+                    <textarea asp-for="MetaDescription" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Keywords" class="form-label">Keywords</label>
+                    <input asp-for="Keywords" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AboutInstitute" class="form-label">About Institute</label>
+                    <textarea asp-for="AboutInstitute" class="form-control" rows="4"></textarea>
+                </div>
+
+                <!-- Facilities Card -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="bi bi-building-gear me-2"></i>Facilities</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-check-inline">
+                            <input asp-for="HostelAvailable" class="form-check-input" />
+                            <label asp-for="HostelAvailable" class="form-check-label">Hostel</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="TransportAvailable" class="form-check-input" />
+                            <label asp-for="TransportAvailable" class="form-check-label">Transport</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="LibraryAvailable" class="form-check-input" />
+                            <label asp-for="LibraryAvailable" class="form-check-label">Library</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="SportsFacilities" class="form-check-input" />
+                            <label asp-for="SportsFacilities" class="form-check-label">Sports</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="WifiCampus" class="form-check-input" />
+                            <label asp-for="WifiCampus" class="form-check-label">WiFi</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scholarship Card -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="bi bi-award me-2"></i>Scholarship</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check">
+                            <input asp-for="ScholarshipAvailable" class="form-check-input" />
+                            <label asp-for="ScholarshipAvailable" class="form-check-label">Scholarship Available</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ranking Card -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Ranking & Status</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="ListingRank" class="form-label">Listing Rank (0 = regular)</label>
+                            <input asp-for="ListingRank" class="form-control" type="number" min="0" />
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsSponsored" class="form-check-input" />
+                            <label asp-for="IsSponsored" class="form-check-label">Sponsored</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsFeatured" class="form-check-input" />
+                            <label asp-for="IsFeatured" class="form-check-label">Featured</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="IsActive" class="form-check-input" />
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <button type="submit" class="btn btn-admin btn-admin-primary">
+                <i class="bi bi-check-lg me-1"></i> Update College
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-x-lg me-1"></i> Cancel
+            </a>
+            <a asp-action="Courses" asp-route-collegeId="@Model.InstituteId" class="btn btn-outline-info ms-2">
+                <i class="bi bi-mortarboard me-1"></i> Manage Courses
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
