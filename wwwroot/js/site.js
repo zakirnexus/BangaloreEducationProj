@@ -1,4 +1,4 @@
-﻿console.log("site.js loaded");
+console.log("site.js loaded");
 
 // ================= LISTING BUTTON =================
 $(document).on("click", ".btn-enquiry", function () {
@@ -32,6 +32,9 @@ function getRecaptchaToken(action) {
 $(document).on("submit", "#enquiryFormListing", function (e) {
     e.preventDefault();
 
+    var isCollegeListPage = window.location.pathname.indexOf("-colleges-in-") !== -1;
+    var listingSubmitUrl = isCollegeListPage ? "/College/Enquiry/Submit" : "/Enquiry/Submit";
+
     var formData = {
         Name:      $("#listing_name").val(),
         Email:     $("#listing_email").val(),
@@ -49,7 +52,7 @@ $(document).on("submit", "#enquiryFormListing", function (e) {
         formData.RecaptchaToken = token;
 
         $.ajax({
-            url: "/Enquiry/Submit",
+            url: listingSubmitUrl,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(formData),
@@ -79,6 +82,9 @@ $(document).on("submit", "#enquiryFormListing", function (e) {
 $(document).on("submit", "#enquiryFormDetails", function (e) {
     e.preventDefault();
 
+    var isCollegePage = window.location.pathname.indexOf("/college/") === 0;
+    var detailsSubmitUrl = isCollegePage ? "/College/Enquiry/Submit" : "/Enquiry/Submit";
+
     var formData = {
         Name:      $("#details_name").val(),
         Email:     $("#details_email").val(),
@@ -96,7 +102,7 @@ $(document).on("submit", "#enquiryFormDetails", function (e) {
         formData.RecaptchaToken = token;
 
         $.ajax({
-            url: "/Enquiry/Submit",
+            url: detailsSubmitUrl,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(formData),
