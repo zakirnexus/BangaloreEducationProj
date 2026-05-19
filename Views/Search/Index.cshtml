@@ -1,42 +1,76 @@
-@model List<SchoolProject.Models.School>
+@model List<SchoolProject.Models.Search.SearchResultViewModel>
 
-<h2>Search Results for "@ViewBag.Query"</h2>
-
-@if (!Model.Any())
-{
-    <p>No results found.</p>
+@{
+    ViewData["Title"] = "Search Results";
 }
-else
-{
-    foreach (var school in Model)
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        Search Results
+    </h2>
+
+    @if (ViewBag.Query != null)
     {
-        <div class="panel panel-default">
-    <div class="panel-body">
-
-        <h3>
-            <a href="/school/@school.InstituteSlug">
-                @school.InstituteName
-            </a>
-        </h3>
-
-        <div>
-            <span class="fa fa-map-marker"></span>
-            @school.City?.CityName
-        </div>
-
-        <br />
-
-        <a href="/school/@school.InstituteSlug" class="btn btn-info">
-            View Details
-        </a>
-
-        <button class="btn btn-primary btn_Enquiry"
-                data-id="@school.InstituteId"
-                data-college="@school.InstituteName">
-            Apply Now
-        </button>
-
-    </div>
-</div>
+        <p class="text-muted mb-4">
+            Showing results for:
+            <strong>@ViewBag.Query</strong>
+        </p>
     }
-}
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning">
+            No results found.
+        </div>
+    }
+    else
+    {
+        <div class="list-group">
+
+            @foreach (var item in Model)
+            {
+                <a href="@item.Url"
+                   class="list-group-item list-group-item-action mb-3 rounded shadow-sm">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <h5 class="mb-1">
+                            @item.Title
+                        </h5>
+
+                        @if (item.Type == "School")
+                        {
+                            <span class="badge bg-primary">
+                                School
+                            </span>
+                        }
+                        else if (item.Type == "College")
+                        {
+                            <span class="badge bg-success">
+                                College
+                            </span>
+                        }
+                        else if (item.Type == "Course")
+                        {
+                            <span class="badge bg-dark">
+                                Course
+                            </span>
+                        }
+
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(item.Description))
+                    {
+                        <p class="mb-1 text-muted mt-2">
+                            @item.Description
+                        </p>
+                    }
+
+                </a>
+            }
+
+        </div>
+    }
+
+</div>
