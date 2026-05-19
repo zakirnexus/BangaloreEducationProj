@@ -1,9 +1,8 @@
 @model SchoolProject.Models.Colleges.College
 
 @{
-    string title = ViewBag.Title as string ?? $"{Model?.InstituteName} - College Details";
+    string title       = ViewBag.Title as string ?? $"{Model?.InstituteName} - College Details";
     string description = ViewBag.Description as string ?? $"Details about {Model?.InstituteName}";
-    var relatedColleges = ViewBag.RelatedColleges as IEnumerable<SchoolProject.Models.Colleges.College> ?? new List<SchoolProject.Models.Colleges.College>();
 }
 
 @section MetaTags {
@@ -12,308 +11,220 @@
     <link rel="canonical" href="@ViewBag.Canonical" />
 }
 
-<nav aria-label="breadcrumb" class="mt-3">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item"><a href="/colleges">Colleges</a></li>
-        <li class="breadcrumb-item active">@Model.InstituteName</li>
-    </ol>
-</nav>
-
-<div class="row mt-4">
-    <!-- Main Content -->
-    <div class="col-lg-8">
-        <!-- Header Card -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-3 text-center">
-                        @if (!string.IsNullOrEmpty(Model.Logo))
-                        {
-                            <img src="@Model.Logo" alt="@Model.InstituteName logo" class="img-fluid" style="max-height:100px;" />
-                        }
-                        else
-                        {
-                            <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height:100px;">
-                                <i class="fa fa-university fa-3x text-muted"></i>
-                            </div>
-                        }
-                    </div>
-                    <div class="col-md-9">
-                        <h1 class="h3 mb-2">@Model.InstituteName</h1>
-                        <p class="text-muted mb-1">
-                            <i class="fa fa-map-marker-alt"></i>
-                            @(Model.Address), @(Model.Locality?.LocalityName), @(Model.City?.CityName)
-                            @if (!string.IsNullOrEmpty(Model.Pincode))
-                            {<span>- @Model.Pincode</span>}
-                        </p>
-                        @if (!string.IsNullOrEmpty(Model.AffiliatedTo))
-                        {
-                            <p class="small mb-1"><strong>Affiliated to:</strong> @Model.AffiliatedTo</p>
-                        }
-                        @if (!string.IsNullOrEmpty(Model.ApprovedBy))
-                        {
-                            <p class="small mb-1"><strong>Approved by:</strong> @Model.ApprovedBy</p>
-                        }
-                        <div class="mt-2">
-                            @if (Model.NaacGrade != null)
-                            {<span class="badge bg-success me-1">NAAC @Model.NaacGrade</span>}
-                            @if (Model.NbaAccredited)
-                            {<span class="badge bg-info me-1">NBA Accredited</span>}
-                            @if (Model.HostelAvailable)
-                            {<span class="badge bg-secondary me-1">Hostel</span>}
-                            @if (Model.ScholarshipAvailable)
-                            {<span class="badge bg-primary me-1">Scholarship</span>}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stats Row -->
-        <div class="row mb-4">
-            @if (Model.PlacementPercentage.HasValue)
-            {
-                <div class="col-md-4 mb-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <h3 class="text-success mb-1">@Model.PlacementPercentage%</h3>
-                            <small class="text-muted">Placement Rate</small>
-                        </div>
-                    </div>
-                </div>
-            }
-            @if (Model.AvgPackageLpa.HasValue)
-            {
-                <div class="col-md-4 mb-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <h3 class="text-primary mb-1">₹@Model.AvgPackageLpa LPA</h3>
-                            <small class="text-muted">Average Package</small>
-                        </div>
-                    </div>
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.Estd))
-            {
-                <div class="col-md-4 mb-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <h3 class="text-secondary mb-1">@Model.Estd</h3>
-                            <small class="text-muted">Established</small>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- About -->
-        @if (!string.IsNullOrEmpty(Model.AboutInstitute))
-        {
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">About</h5>
-                </div>
-                <div class="card-body">
-                    @Html.Raw(Model.AboutInstitute)
-                </div>
-            </div>
-        }
-
-        <!-- Courses Table -->
-        @if (Model.CollegeCourses != null && Model.CollegeCourses.Any(cc => cc.IsActive))
-        {
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Courses & Fees</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Course</th>
-                                    <th>Specialization</th>
-                                    <th>Fees</th>
-                                    <th>Duration</th>
-                                    <th>Seats</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var cc in Model.CollegeCourses.Where(c => c.IsActive))
-                                {
-                                    <tr>
-                                        <td>
-                                            <strong>@cc.Course?.CourseName</strong>
-                                            @if (cc.Course?.Level != null && !string.IsNullOrEmpty(cc.Course.Level.LevelName))
-                                            {<br/><small class="text-muted">@cc.Course.Level.LevelName</small>}
-                                        </td>
-                                        <td>
-                                            @if (cc.SpecializationNav != null && !string.IsNullOrEmpty(cc.SpecializationNav.SpecializationName))
-                                            {
-                                                @cc.SpecializationNav.SpecializationName
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">-</span>
-                                            }
-                                        </td>
-                                        <td>@(string.IsNullOrEmpty(cc.FeesStructure) ? "-" : cc.FeesStructure)</td>
-                                        <td>@(string.IsNullOrEmpty(cc.CourseDuration) ? "-" : cc.CourseDuration)</td>
-                                        <td>@(cc.TotalSeats?.ToString() ?? "-")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        }
-
-        <!-- Facilities - Only use properties we KNOW exist -->
-        @if (Model.HostelAvailable || Model.ScholarshipAvailable)
-        {
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Facilities</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        @if (Model.HostelAvailable)
-                        {<div class="col-6 col-md-4 mb-2"><i class="fa fa-bed text-success"></i> Hostel</div>}
-                        @if (Model.ScholarshipAvailable)
-                        {<div class="col-6 col-md-4 mb-2"><i class="fa fa-graduation-cap text-success"></i> Scholarship</div>}
-                    </div>
-                </div>
-            </div>
-        }
-
-        <!-- Placements -->
-        @if (Model.PlacementPercentage.HasValue || !string.IsNullOrEmpty(Model.TopRecruiters))
-        {
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Placements</h5>
-                </div>
-                <div class="card-body">
-                    @if (Model.PlacementPercentage.HasValue)
-                    {<p><strong>Placement Percentage:</strong> @Model.PlacementPercentage%</p>}
-                    @if (Model.AvgPackageLpa.HasValue)
-                    {<p><strong>Average Package:</strong> ₹@Model.AvgPackageLpa LPA</p>}
-                    @if (!string.IsNullOrEmpty(Model.TopRecruiters))
-                    {<p><strong>Top Recruiters:</strong> @Model.TopRecruiters</p>}
-                </div>
-            </div>
-        }
-
-        <!-- Contact -->
-        <div class="card mb-4">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Contact Information</h5>
-            </div>
-            <div class="card-body">
-                <p class="mb-2">
-                    <i class="fa fa-map-marker-alt text-muted"></i> 
-                    @Model.Address
-                    @if (Model.City != null)
-                    {<span>, @Model.City.CityName</span>}
-                    @if (!string.IsNullOrEmpty(Model.Pincode))
-                    {<span> - @Model.Pincode</span>}
-                </p>
-                @if (!string.IsNullOrEmpty(Model.Telephone))
-                {<p class="mb-2"><i class="fa fa-phone text-muted"></i> @Model.Telephone</p>}
-                @if (!string.IsNullOrEmpty(Model.Mobile))
-                {<p class="mb-2"><i class="fa fa-mobile-alt text-muted"></i> @Model.Mobile</p>}
-                @if (!string.IsNullOrEmpty(Model.Email))
-                {<p class="mb-2"><i class="fa fa-envelope text-muted"></i> @Model.Email</p>}
-                @if (!string.IsNullOrEmpty(Model.Website))
-                {<p class="mb-2"><i class="fa fa-globe text-muted"></i> <a href="@Model.Website" target="_blank">@Model.Website</a></p>}
-            </div>
-        </div>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="col-lg-4">
-        <!-- Enquiry Form -->
-        <div class="card mb-4 sticky-top" style="top:20px; z-index:100;">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Interested in @Model.InstituteName?</h5>
-            </div>
-            <div class="card-body">
-                <p class="small text-muted">Get free admission guidance and fee details</p>
-                <form id="enquiryForm" method="post">
-                    <input type="hidden" name="InstituteId" value="@Model.InstituteId" />
-                    <input type="hidden" name="College" value="@Model.InstituteName" />
-                    <input type="hidden" name="PageUrl" value="@Context.Request.Path" />
-
-                    <div class="mb-3">
-                        <input type="text" name="Name" class="form-control" placeholder="Your Name" required />
-                    </div>
-                    <div class="mb-3">
-                        <input type="email" name="Email" class="form-control" placeholder="Email" required />
-                    </div>
-                    <div class="mb-3">
-                        <input type="tel" name="Phone" class="form-control" placeholder="Phone" required />
-                    </div>
-                    <div class="mb-3">
-                        <textarea name="Message" class="form-control" rows="3" placeholder="Message (optional)"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Submit Enquiry</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Related Colleges -->
-        @if (relatedColleges.Any())
-        {
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Related Colleges</h5>
-                </div>
-                <div class="list-group list-group-flush">
-                    @foreach (var rc in relatedColleges)
-                    {
-                        <a href="/college/@rc.InstituteSlug" class="list-group-item list-group-item-action">
-                            <div class="d-flex align-items-center">
-                                @if (!string.IsNullOrEmpty(rc.Logo))
-                                {
-                                    <img src="@rc.Logo" alt="" class="me-3" style="width:40px; height:40px; object-fit:contain;" />
-                                }
-                                <div>
-                                    <h6 class="mb-0">@rc.InstituteName</h6>
-                                    <small class="text-muted">@rc.Locality?.LocalityName</small>
-                                </div>
-                            </div>
-                        </a>
-                    }
-                </div>
-            </div>
-        }
-    </div>
+<!-- BREADCRUMB -->
+<div class="breadcrumb-wrapper">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li><a href="/">Home</a></li>
+            <li><a href="/colleges">Colleges</a></li>
+            <li class="active">@Model.InstituteName</li>
+        </ol>
+    </nav>
 </div>
+<div style="height:20px;"></div>
 
-<script>
-    document.getElementById('enquiryForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
-        data.QueryType = 'Admission Enquiry';
-
-        try {
-            const response = await fetch('/College/Enquiry/Submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            if (result.success) {
-                alert('Thank you! We will contact you soon.');
-                this.reset();
-            } else {
-                alert(result.message || 'Something went wrong. Please try again.');
+<!-- HEADER -->
+<section class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            @if (!string.IsNullOrEmpty(Model.Logo))
+            {
+                <div class="col-sm-2 col-xs-12" style="margin-bottom:10px;">
+                    <img src="@Model.Logo"
+                         alt="@Model.InstituteName logo"
+                         style="max-height:80px; max-width:120px; width:auto; height:auto; display:block; margin:0 auto;">
+                </div>
             }
-        } catch (err) {
-            alert('Network error. Please try again.');
-        }
-    });
-</script>
+            <div class="col-sm-10">
+                <h1 class="school-title">@Model.InstituteName, @(Model.City?.CityName ?? "")</h1>
+                <p class="school-address">
+                    <i class="fa fa-map-marker"></i>
+                    @Model.Address, @(Model.Locality?.LocalityName), @(Model.City?.CityName)
+                    @if (!string.IsNullOrEmpty(Model.Pincode)) { <text>- @Model.Pincode</text> }
+                </p>
+                @if (!string.IsNullOrEmpty(Model.AffiliatedTo))
+                {<p style="font-size:13px; margin-bottom:3px;"><strong>Affiliated to:</strong> @Model.AffiliatedTo</p>}
+                @if (!string.IsNullOrEmpty(Model.ApprovedBy))
+                {<p style="font-size:13px; margin-bottom:3px;"><strong>Approved by:</strong> @Model.ApprovedBy</p>}
+                <div style="margin-top:6px;">
+                    @if (Model.NaacGrade != null)
+                    {<span class="label label-success" style="margin-right:3px;">NAAC @Model.NaacGrade</span>}
+                    @if (Model.NbaAccredited)
+                    {<span class="label label-info" style="margin-right:3px;">NBA Accredited</span>}
+                    @if (Model.HostelAvailable)
+                    {<span class="label label-default" style="margin-right:3px;">Hostel</span>}
+                    @if (Model.ScholarshipAvailable)
+                    {<span class="label label-primary" style="margin-right:3px;">Scholarship</span>}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+@if (Model.PlacementPercentage.HasValue || Model.AvgPackageLpa.HasValue || !string.IsNullOrEmpty(Model.Estd))
+{
+    <section class="panel panel-default">
+        <div class="panel-body">
+            <div class="row text-center">
+                @if (!string.IsNullOrEmpty(Model.Estd))
+                {
+                    <div class="col-sm-4">
+                        <h3 style="margin:0; color:#555;">@Model.Estd</h3>
+                        <small class="text-muted">Established</small>
+                    </div>
+                }
+                @if (Model.PlacementPercentage.HasValue)
+                {
+                    <div class="col-sm-4">
+                        <h3 style="margin:0; color:#5cb85c;">@Model.PlacementPercentage%</h3>
+                        <small class="text-muted">Placement Rate</small>
+                    </div>
+                }
+                @if (Model.AvgPackageLpa.HasValue)
+                {
+                    <div class="col-sm-4">
+                        <h3 style="margin:0; color:#337ab7;">Rs.@Model.AvgPackageLpa LPA</h3>
+                        <small class="text-muted">Average Package</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- CAMPUS PHOTO -->
+@if (!string.IsNullOrEmpty(Model.Photos))
+{
+    <section class="panel panel-default" style="margin-bottom:20px;">
+        <div class="panel-body" style="padding:0;">
+            <img src="@Model.Photos.Split(',')[0].Trim()"
+                 alt="@Model.InstituteName campus"
+                 class="img-responsive"
+                 style="width:100%; height:auto; border-radius:4px;">
+        </div>
+    </section>
+}
+
+<!-- PHONE CTA -->
+<section style="margin-bottom:15px;">
+    <a href="javascript:void(0);"
+       class="btn-phone-details"
+       data-id="@Model.InstituteId"
+       style="text-decoration:none; display:block;">
+        <div class="phone-box" style="padding:12px 16px; background-color:#ea6645; color:#fff;
+                                        border-radius:4px; display:flex; align-items:center; gap:8px;">
+            <i class="fa fa-phone" style="color:#fff;"></i>
+            <strong id="phoneText" style="color:#fff;">Click Here for Phone Number</strong>
+        </div>
+    </a>
+</section>
+
+<!-- ABOUT -->
+@if (!string.IsNullOrEmpty(Model.AboutInstitute))
+{
+    <section class="panel panel-default">
+        <div class="panel-body">
+            <h3>About @Model.InstituteName</h3>
+            @Html.Raw(Model.AboutInstitute)
+        </div>
+    </section>
+}
+else if (!string.IsNullOrEmpty(Model.MetaDescription))
+{
+    <section class="panel panel-default">
+        <div class="panel-body">
+            <h3>About @Model.InstituteName</h3>
+            <p>@Model.MetaDescription</p>
+        </div>
+    </section>
+}
+
+<!-- COURSES & FEES -->
+@if (Model.CollegeCourses != null && Model.CollegeCourses.Any(cc => cc.IsActive))
+{
+    <section class="panel panel-default">
+        <div class="panel-heading"><h3 style="margin:0; font-size:15px;">Courses &amp; Fees</h3></div>
+        <div class="panel-body" style="padding:0;">
+            <div class="table-responsive">
+                <table class="table table-hover" style="margin-bottom:0;">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Specialization</th>
+                            <th>Fees</th>
+                            <th>Duration</th>
+                            <th>Seats</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cc in Model.CollegeCourses.Where(c => c.IsActive))
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@cc.Course?.CourseName</strong>
+                                    @if (cc.Course?.Level != null && !string.IsNullOrEmpty(cc.Course.Level.LevelName))
+                                    {<br/><small class="text-muted">@cc.Course.Level.LevelName</small>}
+                                </td>
+                                <td>
+                                    @if (cc.SpecializationNav != null && !string.IsNullOrEmpty(cc.SpecializationNav.SpecializationName))
+                                    { @cc.SpecializationNav.SpecializationName }
+                                    else
+                                    { <span class="text-muted">-</span> }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(cc.FeesStructure) ? "-" : cc.FeesStructure)</td>
+                                <td>@(string.IsNullOrEmpty(cc.CourseDuration) ? "-" : cc.CourseDuration)</td>
+                                <td>@(cc.TotalSeats?.ToString() ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- FACILITIES -->
+@if (Model.HostelAvailable || Model.ScholarshipAvailable || Model.TransportAvailable ||
+     Model.LibraryAvailable || Model.SportsFacilities || Model.WifiCampus)
+{
+    <section class="panel panel-default">
+        <div class="panel-heading"><h3 style="margin:0; font-size:15px;">Facilities</h3></div>
+        <div class="panel-body">
+            <div class="row">
+                @if (Model.HostelAvailable)
+                {<div class="col-xs-6 col-sm-4" style="margin-bottom:8px;"><i class="fa fa-bed text-success"></i> Hostel</div>}
+                @if (Model.TransportAvailable)
+                {<div class="col-xs-6 col-sm-4" style="margin-bottom:8px;"><i class="fa fa-bus text-success"></i> Transport</div>}
+                @if (Model.LibraryAvailable)
+                {<div class="col-xs-6 col-sm-4" style="margin-bottom:8px;"><i class="fa fa-book text-success"></i> Library</div>}
+                @if (Model.SportsFacilities)
+                {<div class="col-xs-6 col-sm-4" style="margin-bottom:8px;"><i class="fa fa-futbol-o text-success"></i> Sports</div>}
+                @if (Model.WifiCampus)
+                {<div class="col-xs-6 col-sm-4" style="margin-bottom:8px;"><i class="fa fa-wifi text-success"></i> Wi-Fi Campus</div>}
+                @if (Model.ScholarshipAvailable)
+                {<div class="col-xs-6 col-sm-4" style="margin-bottom:8px;"><i class="fa fa-graduation-cap text-success"></i> Scholarship</div>}
+            </div>
+            @if (!string.IsNullOrEmpty(Model.ScholarshipDetails))
+            {<p style="margin-top:8px; font-size:13px;"><strong>Scholarship details:</strong> @Model.ScholarshipDetails</p>}
+        </div>
+    </section>
+}
+
+<!-- PLACEMENTS -->
+@if (Model.PlacementPercentage.HasValue || !string.IsNullOrEmpty(Model.TopRecruiters))
+{
+    <section class="panel panel-default">
+        <div class="panel-heading"><h3 style="margin:0; font-size:15px;">Placements</h3></div>
+        <div class="panel-body">
+            @if (Model.PlacementPercentage.HasValue)
+            {<p><strong>Placement Percentage:</strong> @Model.PlacementPercentage%</p>}
+            @if (Model.AvgPackageLpa.HasValue)
+            {<p><strong>Average Package:</strong> Rs.@Model.AvgPackageLpa LPA</p>}
+            @if (!string.IsNullOrEmpty(Model.TopRecruiters))
+            {<p><strong>Top Recruiters:</strong> @Model.TopRecruiters</p>}
+        </div>
+    </section>
+}
+
+
