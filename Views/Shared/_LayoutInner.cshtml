@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/selectize.css">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/css/site.css">
     <link rel="stylesheet" href="/css/viewer.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
@@ -241,12 +242,106 @@
                 <!-- Right Sidebar -->
                 @if (!isHomePage)
                 {
-                    @await Html.PartialAsync("_Sidebar", sidebarClass)
+                    bool isDetailsPage = path.StartsWith("/school/") || path.StartsWith("/college/");
+                    if (isDetailsPage)
+                    {
+                        @await Html.PartialAsync("_SidebarDetails")
+                    }
+                    else
+                    {
+                        @await Html.PartialAsync("_Sidebar", sidebarClass)
+                    }
                 }
 
             </div><!-- /.row -->
         </div><!-- /.container -->
     </div><!-- end Page Content -->
+
+    <!-- ══ MODALS (must live outside .container, before scripts) ══ -->
+
+    <!-- Enquiry Modal (listing pages) -->
+    <div class="modal fade" id="enquiryModal" tabindex="-1" role="dialog" aria-labelledby="enquiryModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#1a56db; color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" style="color:#fff; opacity:1;">&times;</button>
+                    <h4 class="modal-title" id="enquiryModalLabel">Enquire Now</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="enquiryFormListing">
+                        <input type="hidden" id="listing_institute_id">
+                        <input type="hidden" id="listing_college">
+                        <input type="hidden" id="listing_page_url">
+                        <input type="text" id="listing_honeypot" name="honeypot" style="display:none;" tabindex="-1" autocomplete="off">
+                        <div class="form-group">
+                            <input type="text"  id="listing_name"    class="form-control" placeholder="Your Name *" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="listing_email"   class="form-control" placeholder="Email Address *" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel"   id="listing_phone"   class="form-control" placeholder="Phone Number *" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text"  id="listing_course"  class="form-control" placeholder="Course interested in">
+                        </div>
+                        <div class="form-group">
+                            <textarea id="listing_message" class="form-control" rows="3" placeholder="Message (optional)"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Send Enquiry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phone Reveal Modal (details pages) -->
+    <div class="modal fade" id="phoneModal" tabindex="-1" role="dialog" aria-labelledby="phoneModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#1a56db; color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" style="color:#fff; opacity:1;">&times;</button>
+                    <h4 class="modal-title" id="phoneModalLabel">Get Phone Number</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:13px; color:#555; margin-bottom:12px;">Fill in your details to reveal the phone number.</p>
+                    <form id="enquiryFormDetails">
+                        <input type="hidden" id="details_institute_id">
+                        <input type="text" id="details_honeypot" name="honeypot" style="display:none;" tabindex="-1" autocomplete="off">
+                        <div class="form-group">
+                            <input type="text"  id="details_name"   class="form-control" placeholder="Your Name *" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="details_email"  class="form-control" placeholder="Email Address *" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel"   id="details_phone"  class="form-control" placeholder="Phone Number *" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text"  id="details_course" class="form-control" placeholder="Course interested in">
+                        </div>
+                        <div class="form-group">
+                            <textarea id="details_message" class="form-control" rows="2" placeholder="Message (optional)"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Reveal Phone Number</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup -->
+    <div class="modal fade" id="msg_popup" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#5cb85c; color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" style="color:#fff; opacity:1;">&times;</button>
+                    <h4 class="modal-title">Success</h4>
+                </div>
+                <div class="modal-body" id="msg_content" style="text-align:center; padding:20px;"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer (scripts load here -- modals above must exist first) -->
     @await Html.PartialAsync("_Footer")

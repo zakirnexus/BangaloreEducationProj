@@ -1,0 +1,187 @@
+@*
+    Details-page sidebar: shows an inline enquiry form + photo gallery.
+    No ad banners. Works for both School and College detail pages.
+    ViewBag.InstituteId, ViewBag.InstituteName, ViewBag.Photos (comma-separated) must be set by the controller.
+*@
+@{
+    var instituteId   = ViewBag.InstituteId as int? ?? 0;
+    var instituteName = ViewBag.InstituteName as string ?? "";
+    var photosRaw     = ViewBag.Photos as string ?? "";
+    var photos        = photosRaw
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Where(p => !string.IsNullOrWhiteSpace(p))
+        .ToList();
+}
+
+<div class="col-md-4">
+    <div id="page-sidebar" class="sidebar">
+
+        <!-- ══ ENQUIRY FORM ══ -->
+        <aside class="panel panel-default">
+            <div class="panel-heading" style="background:#1a56db; color:#fff; border-radius:4px 4px 0 0;">
+                <h3 style="margin:0; font-size:15px; font-weight:700;">
+                    <i class="fa fa-envelope-o" style="margin-right:6px;"></i>Enquire Now
+                </h3>
+            </div>
+            <div class="panel-body" style="padding:14px;">
+
+                <input type="hidden" id="sidebar_institute_id"   value="@instituteId">
+                <input type="hidden" id="sidebar_college"        value="@instituteName">
+                <input type="hidden" id="sidebar_page_url">
+                <!-- honeypot -->
+                <input type="text"   id="sidebar_honeypot" name="honeypot" style="display:none;" tabindex="-1" autocomplete="off">
+
+                <div class="form-group" style="margin-bottom:8px;">
+                    <input type="text" id="sidebar_name" class="form-control input-sm"
+                           placeholder="Your Name *" required>
+                </div>
+                <div class="form-group" style="margin-bottom:8px;">
+                    <input type="email" id="sidebar_email" class="form-control input-sm"
+                           placeholder="Email Address *" required>
+                </div>
+                <div class="form-group" style="margin-bottom:8px;">
+                    <input type="tel" id="sidebar_phone" class="form-control input-sm"
+                           placeholder="Phone Number *" required>
+                </div>
+                <div class="form-group" style="margin-bottom:8px;">
+                    <input type="text" id="sidebar_course" class="form-control input-sm"
+                           placeholder="Course / Class interested in">
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <textarea id="sidebar_message" class="form-control input-sm"
+                              rows="3" placeholder="Message (optional)"></textarea>
+                </div>
+
+                <button id="sidebar_submit_btn" class="btn btn-primary btn-block" type="button">
+                    Send Enquiry
+                </button>
+
+                <div id="sidebar_success_msg" style="display:none; margin-top:10px;"
+                     class="alert alert-success" role="alert">
+                    Thank you! Your enquiry has been sent.
+                </div>
+                <div id="sidebar_error_msg" style="display:none; margin-top:10px;"
+                     class="alert alert-danger" role="alert">
+                    Something went wrong. Please try again.
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- ══ PHOTO GALLERY (only if photos exist) ══ -->
+        @if (photos.Any())
+        {
+            <aside class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 style="margin:0; font-size:14px; font-weight:700;">
+                        <i class="fa fa-picture-o" style="margin-right:6px;"></i>Photo Gallery
+                    </h3>
+                </div>
+                <div class="panel-body" style="padding:8px;">
+                    <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                        @foreach (var photo in photos)
+                        {
+                            <a href="@photo" target="_blank" rel="noopener"
+                               style="display:block; width:calc(50% - 3px);">
+                                <img src="@photo"
+                                     alt="@instituteName campus photo"
+                                     style="width:100%; height:80px; object-fit:cover;
+                                            border-radius:3px; border:1px solid #eee;">
+                            </a>
+                        }
+                    </div>
+                </div>
+            </aside>
+        }
+
+    </div>
+</div>
+
+<script>
+(function () {
+    // Set page URL once DOM ready
+    document.addEventListener("DOMContentLoaded", function () {
+        var el = document.getElementById("sidebar_page_url");
+        if (el) el.value = window.location.href;
+    });
+
+    // Determine submit URL: college details vs school details
+    var isCollegePage = window.location.pathname.indexOf("/college/") === 0;
+    var submitUrl     = isCollegePage ? "/College/Enquiry/Submit" : "/Enquiry/Submit";
+
+    document.addEventListener("click", function (e) {
+        if (e.target && e.target.id === "sidebar_submit_btn") {
+            submitSidebarEnquiry();
+        }
+    });
+
+    function submitSidebarEnquiry() {
+        var name    = (document.getElementById("sidebar_name")    || {}).value || "";
+        var email   = (document.getElementById("sidebar_email")   || {}).value || "";
+        var phone   = (document.getElementById("sidebar_phone")   || {}).value || "";
+        var course  = (document.getElementById("sidebar_course")  || {}).value || "";
+        var message = (document.getElementById("sidebar_message") || {}).value || "";
+        var honeypot= (document.getElementById("sidebar_honeypot")|| {}).value || "";
+        var id      = parseInt((document.getElementById("sidebar_institute_id") || {}).value) || 0;
+        var college = (document.getElementById("sidebar_college") || {}).value || "";
+        var pageUrl = (document.getElementById("sidebar_page_url")|| {}).value || window.location.href;
+
+        if (!name || !email || !phone) {
+            alert("Please fill in Name, Email and Phone.");
+            return;
+        }
+
+        var btn = document.getElementById("sidebar_submit_btn");
+        btn.disabled = true;
+        btn.textContent = "Sending…";
+
+        var payload = {
+            Name: name, Email: email, Phone: phone,
+            Course: course, Message: message,
+            College: college, InstituteId: id,
+            PageUrl: pageUrl, QueryType: "Enquiry",
+            Honeypot: honeypot, RecaptchaToken: ""
+        };
+
+        function doSubmit(token) {
+            payload.RecaptchaToken = token || "";
+            fetch(submitUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(function (res) {
+                btn.disabled = false;
+                btn.textContent = "Send Enquiry";
+                if (res.ok) {
+                    document.getElementById("sidebar_success_msg").style.display = "block";
+                    document.getElementById("sidebar_error_msg").style.display   = "none";
+                    // clear fields
+                    ["sidebar_name","sidebar_email","sidebar_phone",
+                     "sidebar_course","sidebar_message"].forEach(function(id){
+                        var el = document.getElementById(id);
+                        if (el) el.value = "";
+                    });
+                } else {
+                    document.getElementById("sidebar_error_msg").style.display   = "block";
+                    document.getElementById("sidebar_success_msg").style.display = "none";
+                }
+            })
+            .catch(function () {
+                btn.disabled = false;
+                btn.textContent = "Send Enquiry";
+                document.getElementById("sidebar_error_msg").style.display = "block";
+            });
+        }
+
+        if (typeof grecaptcha !== "undefined" && window.recaptchaSiteKey) {
+            grecaptcha.ready(function () {
+                grecaptcha.execute(window.recaptchaSiteKey, { action: "enquiry" })
+                    .then(doSubmit);
+            });
+        } else {
+            doSubmit("");
+        }
+    }
+})();
+</script>
